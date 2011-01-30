@@ -1,6 +1,6 @@
 #include this file into another test for subclass testing...
 
-ok ($class->config()->{lib},$CL);
+is ($class->config()->{lib},$CL);
 
 use strict;
 
@@ -8,7 +8,7 @@ my $z;
 
 while (<DATA>)
   {
-  chomp;
+  $_ =~ s/[\n\r]//g;	# remove newlines
   $_ =~ s/#.*$//;	# remove comments
   $_ =~ s/\s+$//;	# trailing spaces
   next if /^$/;		# skip empty lines & comments
@@ -63,6 +63,8 @@ while (<DATA>)
       # some is_xxx test function	
       } elsif ($f =~ /^is_(zero|one|negative|positive|odd|even|nan|int)$/) {
         $try .= "\$x->$f();";
+      } elsif ($f eq "bpi") {
+        $try .= '$class->bpi($x);';
       } elsif ($f eq "finc") {
         $try .= '++$x;';
       } elsif ($f eq "fdec") {
@@ -115,6 +117,14 @@ while (<DATA>)
         $try .= '$x->facmp($y);';
       } elsif ($f eq "fpow") {
         $try .= '$x ** $y;';
+      } elsif ($f eq "bnok") {
+        $try .= '$x->bnok($y);';
+      } elsif ($f eq "bcos") {
+        $try .= '$x->bcos($y);';
+      } elsif ($f eq "bsin") {
+        $try .= '$x->bsin($y);';
+      } elsif ($f eq "batan") {
+        $try .= '$x->batan($y);';
       } elsif ($f eq "froot") {
         $try .= "$setup; \$x->froot(\$y);";
       } elsif ($f eq "fadd") {
@@ -133,7 +143,18 @@ while (<DATA>)
         $try .= '$x << $y;';
       } elsif ($f eq "fmod") {
         $try .= '$x % $y;';
-      } else { warn "Unknown op '$f'"; }
+       } else {
+       # Functions with three arguments
+       $try .= "\$z = $class->new(\"$args[2]\");";
+
+       if( $f eq "bmodpow") {
+          $try .= '$x->bmodpow($y,$z);';
+         } elsif ($f eq "bmuladd"){
+          $try .= '$x->bmuladd($y,$z);';
+         } elsif ($f eq "batan2"){
+          $try .= '$x->batan2($y,$z);';
+         } else { warn "Unknown op '$f'"; }
+       }
     }
     # print "# Trying: '$try'\n";
     $ans1 = eval $try;
@@ -143,29 +164,29 @@ while (<DATA>)
       my $pat = $1;
       if ($ans1 =~ /$pat/)
         {
-        ok (1,1);
+        is (1,1);
         }
       else
         {
-        print "# '$try' expected: /$pat/ got: '$ans1'\n" if !ok(1,0);
+        print "# '$try' expected: /$pat/ got: '$ans1'\n" if !is (1,0);
         }
       }
     else
       {
       if ($ans eq "")
         {
-        ok_undef ($ans1);
+	  is ($ans1, undef);
         }
       else
         {
-        print "# Tried: '$try'\n" if !ok ($ans1, $ans);
+        print "# Tried: '$try'\n" if !is ($ans1, $ans);
         if (ref($ans1) eq "$class")
 	  {
 	  # float numbers are normalized (for now), so mantissa shouldn't have
 	  # trailing zeros
 	  #print $ans1->_trailing_zeros(),"\n";
           print "# Has trailing zeros after '$try'\n"
-	   if !ok ($CL->_zeros( $ans1->{_m}), 0);
+	   if !is ($CL->_zeros( $ans1->{_m}), 0);
 	  }
         }
       } # end pattern or string
@@ -175,7 +196,7 @@ while (<DATA>)
 # check whether $class->new( Math::BigInt->new()) destroys it 
 # ($y == 12 in this case)
 $x = Math::BigInt->new(1200); $y = $class->new($x);
-ok ($y,1200); ok ($x,1200);
+is ($y,1200); is ($x,1200);
 
 ###############################################################################
 # Really huge, big, ultra-mega-biggy-monster exponents
@@ -189,43 +210,43 @@ ok ($y,1200); ok ($x,1200);
 my $monster = '1e1234567890123456789012345678901234567890';
 
 # new and exponent
-ok ($class->new($monster)->bsstr(), 
+is ($class->new($monster)->bsstr(), 
 		'1e+1234567890123456789012345678901234567890');
-ok ($class->new($monster)->exponent(), 
+is ($class->new($monster)->exponent(), 
 		'1234567890123456789012345678901234567890');
 # cmp
-ok ($class->new($monster) > 0,1);
+is ($class->new($monster) > 0,1);
 
 # sub/mul 
-ok ($class->new($monster)->bsub( $monster),0);
-ok ($class->new($monster)->bmul(2)->bsstr(),
+is ($class->new($monster)->bsub( $monster),0);
+is ($class->new($monster)->bmul(2)->bsstr(),
                 '2e+1234567890123456789012345678901234567890');
 
 # mantissa
 $monster = '1234567890123456789012345678901234567890e2';
-ok ($class->new($monster)->mantissa(), 
+is ($class->new($monster)->mantissa(), 
 		'123456789012345678901234567890123456789');
 
 ###############################################################################
 # zero,inf,one,nan
 
-$x = $class->new(2); $x->fzero(); ok_undef ($x->{_a}); ok_undef ($x->{_p});
-$x = $class->new(2); $x->finf();  ok_undef ($x->{_a}); ok_undef ($x->{_p});
-$x = $class->new(2); $x->fone();  ok_undef ($x->{_a}); ok_undef ($x->{_p});
-$x = $class->new(2); $x->fnan();  ok_undef ($x->{_a}); ok_undef ($x->{_p});
+$x = $class->new(2); $x->fzero(); is ($x->{_a}, undef); is ($x->{_p}, undef);
+$x = $class->new(2); $x->finf();  is ($x->{_a}, undef); is ($x->{_p}, undef);
+$x = $class->new(2); $x->fone();  is ($x->{_a}, undef); is ($x->{_p}, undef);
+$x = $class->new(2); $x->fnan();  is ($x->{_a}, undef); is ($x->{_p}, undef);
 
 ###############################################################################
 # bone/binf etc as plain calls (Lite failed them)
 
-ok ($class->fzero(),0);
-ok ($class->fone(),1);
-ok ($class->fone('+'),1);
-ok ($class->fone('-'),-1);
-ok ($class->fnan(),'NaN');
-ok ($class->finf(),'inf');
-ok ($class->finf('+'),'inf');
-ok ($class->finf('-'),'-inf');
-ok ($class->finf('-inf'),'-inf');
+is ($class->fzero(),0);
+is ($class->fone(),1);
+is ($class->fone('+'),1);
+is ($class->fone('-'),-1);
+is ($class->fnan(),'NaN');
+is ($class->finf(),'inf');
+is ($class->finf('+'),'inf');
+is ($class->finf('-'),'-inf');
+is ($class->finf('-inf'),'-inf');
         
 $class->accuracy(undef); $class->precision(undef);	# reset
 
@@ -234,27 +255,27 @@ $class->accuracy(undef); $class->precision(undef);	# reset
 
 $x = $class->new('0.008'); $y = $class->new(2);
 $x->bdiv(3,$y);
-ok ($x,'0.0027');
+is ($x,'0.0027');
 
 ###############################################################################
 # fsqrt() with set global A/P or A/P enabled on $x, also a test whether fsqrt()
 # correctly modifies $x
 
 
-$x = $class->new(12); $class->precision(-2); $x->fsqrt(); ok ($x,'3.46');
+$x = $class->new(12); $class->precision(-2); $x->fsqrt(); is ($x,'3.46');
 
 $class->precision(undef);
-$x = $class->new(12); $class->precision(0); $x->fsqrt(); ok ($x,'3');
+$x = $class->new(12); $class->precision(0); $x->fsqrt(); is ($x,'3');
 
-$class->precision(-3); $x = $class->new(12); $x->fsqrt(); ok ($x,'3.464');
+$class->precision(-3); $x = $class->new(12); $x->fsqrt(); is ($x,'3.464');
 
 {
   no strict 'refs';
   # A and P set => NaN
   ${${class}.'::accuracy'} = 4; $x = $class->new(12);
-  $x->fsqrt(3); ok ($x,'NaN');
+  $x->fsqrt(3); is ($x,'NaN');
   # supplied arg overrides set global
-  $class->precision(undef); $x = $class->new(12); $x->fsqrt(3); ok ($x,'3.46');
+  $class->precision(undef); $x = $class->new(12); $x->fsqrt(3); is ($x,'3.46');
   $class->accuracy(undef); $class->precision(undef); # reset for further tests
 }
 
@@ -266,47 +287,47 @@ $class->precision(-3); $x = $class->new(12); $x->fsqrt(); ok ($x,'3.464');
   $try = 
     '@args' . " = $class" . "::objectify(2,$class,4,5);".'join(" ",@args);';
   $ans = eval $try;
-  ok ($ans,"$class 4 5");
+  is ($ans,"$class 4 5");
 }
 
 #############################################################################
 # is_one('-') (broken until v1.64)
 
-ok ($class->new(-1)->is_one(),0);
-ok ($class->new(-1)->is_one('-'),1);
+is ($class->new(-1)->is_one(),0);
+is ($class->new(-1)->is_one('-'),1);
 
 #############################################################################
 # bug 1/0.5 leaving 2e-0 instead of 2e0
 
-ok ($class->new(1)->fdiv('0.5')->bsstr(),'2e+0');
+is ($class->new(1)->fdiv('0.5')->bsstr(),'2e+0');
 
 ###############################################################################
-# [perl #30609] bug with $x -= $x not beeing 0, but 2*$x
+# [perl #30609] bug with $x -= $x not being 0, but 2*$x
 
-$x = $class->new(3);  $x -= $x; ok ($x, 0);
-$x = $class->new(-3); $x -= $x; ok ($x, 0);
-$x = $class->new(3);  $x += $x; ok ($x, 6);
-$x = $class->new(-3); $x += $x; ok ($x, -6);
+$x = $class->new(3);  $x -= $x; is ($x, 0);
+$x = $class->new(-3); $x -= $x; is ($x, 0);
+$x = $class->new(3);  $x += $x; is ($x, 6);
+$x = $class->new(-3); $x += $x; is ($x, -6);
 
-$x = $class->new('NaN'); $x -= $x; ok ($x->is_nan(), 1);
-$x = $class->new('inf'); $x -= $x; ok ($x->is_nan(), 1);
-$x = $class->new('-inf'); $x -= $x; ok ($x->is_nan(), 1);
+$x = $class->new('NaN'); $x -= $x; is ($x->is_nan(), 1);
+$x = $class->new('inf'); $x -= $x; is ($x->is_nan(), 1);
+$x = $class->new('-inf'); $x -= $x; is ($x->is_nan(), 1);
 
-$x = $class->new('NaN'); $x += $x; ok ($x->is_nan(), 1);
-$x = $class->new('inf'); $x += $x; ok ($x->is_inf(), 1);
-$x = $class->new('-inf'); $x += $x; ok ($x->is_inf('-'), 1);
+$x = $class->new('NaN'); $x += $x; is ($x->is_nan(), 1);
+$x = $class->new('inf'); $x += $x; is ($x->is_inf(), 1);
+$x = $class->new('-inf'); $x += $x; is ($x->is_inf('-'), 1);
 
-$x = $class->new('3.14');  $x -= $x; ok ($x, 0);
-$x = $class->new('-3.14'); $x -= $x; ok ($x, 0);
-$x = $class->new('3.14');  $x += $x; ok ($x, '6.28');
-$x = $class->new('-3.14'); $x += $x; ok ($x, '-6.28');
+$x = $class->new('3.14');  $x -= $x; is ($x, 0);
+$x = $class->new('-3.14'); $x -= $x; is ($x, 0);
+$x = $class->new('3.14');  $x += $x; is ($x, '6.28');
+$x = $class->new('-3.14'); $x += $x; is ($x, '-6.28');
 
-$x = $class->new('3.14');  $x *= $x; ok ($x, '9.8596');
-$x = $class->new('-3.14'); $x *= $x; ok ($x, '9.8596');
-$x = $class->new('3.14');  $x /= $x; ok ($x, '1');
-$x = $class->new('-3.14'); $x /= $x; ok ($x, '1');
-$x = $class->new('3.14');  $x %= $x; ok ($x, '0');
-$x = $class->new('-3.14'); $x %= $x; ok ($x, '0');
+$x = $class->new('3.14');  $x *= $x; is ($x, '9.8596');
+$x = $class->new('-3.14'); $x *= $x; is ($x, '9.8596');
+$x = $class->new('3.14');  $x /= $x; is ($x, '1');
+$x = $class->new('-3.14'); $x /= $x; is ($x, '1');
+$x = $class->new('3.14');  $x %= $x; is ($x, '0');
+$x = $class->new('-3.14'); $x %= $x; is ($x, '0');
 
 ###############################################################################
 # the following two were reported by "kenny" via hotmail.com:
@@ -315,49 +336,38 @@ $x = $class->new('-3.14'); $x %= $x; ok ($x, '0');
 #Use of uninitialized value in numeric le (<=) at BigFloat.pm line 1851.
 
 $x = $class->new(0); $y = $class->new('0.1');
-ok ($x ** $y, 0, 'no warnings and zero result');
+is ($x ** $y, 0, 'no warnings and zero result');
 
 #perl -MMath::BigFloat -lwe 'print Math::BigFloat->new(".222222222222222222222222222222222222222222")->bceil()'
 #Use of uninitialized value in numeric le (<=) at BigFloat.pm line 1851.
 
 $x = $class->new(".222222222222222222222222222222222222222222"); 
-ok ($x->bceil(), 1, 'no warnings and one as result');
+is ($x->bceil(), 1, 'no warnings and one as result');
 
 ###############################################################################
 # test **=, <<=, >>=
 
 # ((2^148)-1)/17
 $x = $class->new(2); $x **= 148; $x++; $x->bdiv(17, 60)->bfloor(); $x->accuracy(undef);
-ok ($x,"20988936657440586486151264256610222593863921");
-ok ($x->length(),length "20988936657440586486151264256610222593863921");
+is ($x,"20988936657440586486151264256610222593863921");
+is ($x->length(),length "20988936657440586486151264256610222593863921");
 
 $x = $class->new('2');
 my $y = $class->new('18');
-ok ($x <<= $y, 2 << 18);
-ok ($x, 2 << 18);
-ok ($x >>= $y, 2);
-ok ($x, 2);
+is ($x <<= $y, 2 << 18);
+is ($x, 2 << 18);
+is ($x >>= $y, 2);
+is ($x, 2);
 
 $x = $class->new('2');
 $y = $class->new('18.2');
 $x <<= $y;		# 2 * (2 ** 18.2);
 
-ok ($x->copy()->bfround(-9), '602248.763144685');
-ok ($x >>= $y, 2);	# 2 * (2 ** 18.2) / (2 ** 18.2) => 2
-ok ($x, 2);
+is ($x->copy()->bfround(-9), '602248.763144685');
+is ($x >>= $y, 2);	# 2 * (2 ** 18.2) / (2 ** 18.2) => 2
+is ($x, 2);
 
 1; # all done
-
-###############################################################################
-# Perl 5.005 does not like ok ($x,undef)
-
-sub ok_undef
-  {
-  my $x = shift;
-
-  ok (1,1) and return if !defined $x;
-  ok ($x,'undef');
-  }
 
 __DATA__
 &bgcd
@@ -397,6 +407,89 @@ abc:+0:NaN
 +27:+90:270
 +1034:+804:415668
 $div_scale = 40;
+&bcos
+1.2:10:0.3623577545
+2.4:12:-0.737393715541
+0:10:1
+0:20:1
+1:10:0.5403023059
+1:12:0.540302305868
+&bsin
+1:10:0.8414709848
+0:10:0
+0:20:0
+2.1:12:0.863209366649
+1.2:13:0.9320390859672
+0.2:13:0.1986693307951
+3.2:12:-0.0583741434276
+&batan
+NaN:10:NaN
+inf:14:1.5707963267949
+-inf:14:-1.5707963267949
+0.2:13:0.1973955598499
+0.2:14:0.19739555984988
+0:10:0
+1:14:0.78539816339744
+-1:14:-0.78539816339744
+# test an argument X > 1
+2:14:1.1071487177941
+&batan2
+NaN:1:10:NaN
+NaN:NaN:10:NaN
+1:NaN:10:NaN
+inf:1:14:1.5707963267949
+-inf:1:14:-1.5707963267949
+0:-inf:14:3.1415926535898
+-1:-inf:14:-3.1415926535898
+1:-inf:14:3.1415926535898
+0:inf:14:0
+inf:-inf:14:2.3561944901923
+-inf:-inf:14:-2.3561944901923
+inf:+inf:14:0.7853981633974
+-inf:+inf:14:-0.7853981633974
+1:5:13:0.1973955598499
+1:5:14:0.19739555984988
+0:0:10:0
+0:1:14:0
+0:2:14:0
+1:0:14:1.5707963267949
+5:0:14:1.5707963267949
+-1:0:11:-1.5707963268
+-2:0:77:-1.5707963267948966192313216916397514420985846996875529104874722961539082031431
+2:0:77:1.5707963267948966192313216916397514420985846996875529104874722961539082031431
+-1:5:14:-0.19739555984988
+1:5:14:0.19739555984988
+-1:8:14:-0.12435499454676
+1:8:14:0.12435499454676
+-1:1:14:-0.78539816339744
+# test an argument X > 1 and one X < 1
+1:2:24:0.463647609000806116214256
+2:1:14:1.1071487177941
+-2:1:14:-1.1071487177941
+&bpi
+150:3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940813
+77:3.1415926535897932384626433832795028841971693993751058209749445923078164062862
++0:3.141592653589793238462643383279502884197
+11:3.1415926536
+&bnok
++inf:10:inf
+NaN:NaN:NaN
+NaN:1:NaN
+1:NaN:NaN
+1:1:1
+# k > n
+1:2:0
+2:3:0
+# k < 0
+1:-2:0
+# 7 over 3 = 35
+7:3:35
+7:6:7
+100:90:17310309456440
+100:95:75287520
+2:0:1
+7:0:1
+2:1:2
 &flog
 0::NaN
 -1::NaN
@@ -494,6 +587,10 @@ fnormNaN:NaN
 -2:-2
 -123.456:-123
 -200:-200
+-inf:-inf
+inf:inf
+NaN:NaN
+71243225429896467497217836789578596379:71243225429896467497217836789578596379
 # test for bug in brsft() not handling cases that return 0
 0.000641:0
 0.0006412:0
@@ -629,7 +726,7 @@ abc:NaN
 -123456E-2:-1234.56
 1e1:10
 2e-11:0.00000000002
-# excercise _split
+# exercise _split
   .02e-1:0.002
    000001:1
    -00001:-1
@@ -967,6 +1064,8 @@ fcmpNaN:+0:
 2:1.5:1
 1.54321:234:-1
 234:1.54321:1
+1e1234567890987654321:1e1234567890987654320:1
+1e-1234567890987654321:1e-1234567890987654320:-1
 # infinity
 -inf:5432112345:-1
 +inf:5432112345:1
@@ -1181,6 +1280,73 @@ baddNaN:+inf:NaN
 -123456789:+987654321:-1111111110
 -123456789:-987654321:864197532
 +123456789:-987654321:1111111110
+&bmuladd
+abc:abc:0:NaN
+abc:+0:0:NaN
++0:abc:0:NaN
++0:0:abc:NaN
+NaNmul:+inf:0:NaN
+NaNmul:-inf:0:NaN
+-inf:NaNmul:0:NaN
++inf:NaNmul:0:NaN
++inf:+inf:0:inf
++inf:-inf:0:-inf
+-inf:+inf:0:-inf
+-inf:-inf:0:inf
++0:+0:0:0
++0:+1:0:0
++1:+0:0:0
++0:-1:0:0
+-1:+0:0:0
+123456789123456789:0:0:0
+0:123456789123456789:0:0
+-1:-1:0:1
+-1:-1:0:1
+-1:+1:0:-1
++1:-1:0:-1
++1:+1:0:1
++2:+3:0:6
+-2:+3:0:-6
++2:-3:0:-6
+-2:-3:0:6
+111:111:0:12321
+10101:10101:0:102030201
+1001001:1001001:0:1002003002001
+100010001:100010001:0:10002000300020001
+10000100001:10000100001:0:100002000030000200001
+11111111111:9:0:99999999999
+22222222222:9:0:199999999998
+33333333333:9:0:299999999997
+44444444444:9:0:399999999996
+55555555555:9:0:499999999995
+66666666666:9:0:599999999994
+77777777777:9:0:699999999993
+88888888888:9:0:799999999992
+99999999999:9:0:899999999991
+11111111111:9:1:100000000000
+22222222222:9:1:199999999999
+33333333333:9:1:299999999998
+44444444444:9:1:399999999997
+55555555555:9:1:499999999996
+66666666666:9:1:599999999995
+77777777777:9:1:699999999994
+88888888888:9:1:799999999993
+99999999999:9:1:899999999992
+-3:-4:-5:7
+3:-4:-5:-17
+-3:4:-5:-17
+3:4:-5:7
+-3:4:5:-7
+3:-4:5:-7
+9999999999999999999:10000000000000000000:1234567890:99999999999999999990000000001234567890
+3.2:5.7:8.9:27.14
+-3.2:5.197:6.05:-10.5804
+&bmodpow
+3:4:8:1
+3:4:7:4
+3:4:7:4
+77777:777:123456789:99995084
+3.2:6.2:5.2:2.970579856718063040273642739529400818
 &fmul
 abc:abc:NaN
 abc:+0:NaN
@@ -1343,7 +1509,7 @@ inf:inf:NaN
 inf:-inf:NaN
 8:0:8
 inf:0:inf
-# exceptions to reminder rule
+# exceptions to remainder rule
 -inf:0:-inf
 -8:0:-8
 0:0:NaN
