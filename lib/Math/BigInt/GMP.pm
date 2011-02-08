@@ -9,7 +9,7 @@ use 5.006002;
 
 use vars qw/$VERSION/;
 
-$VERSION = '1.34';
+$VERSION = '1.35';
 
 use XSLoader;
 XSLoader::load "Math::BigInt::GMP", $VERSION;
@@ -41,12 +41,8 @@ sub _num {
 # Return binomial coefficient (n over k). The code is based on _nok() in
 # Math::BigInt::Calc.
 
-sub _nok_ok {
+sub _nok {
     my ($c, $n, $k) = @_;
-
-    if (_is_zero($c, $k)) {
-        return _one($c);
-    }
 
     # If k > n/2, or, equivalently, 2*k > n, compute nok(n, k) as
     # nok(n, n-k), to minimize the number if iterations in the loop.
@@ -54,32 +50,36 @@ sub _nok_ok {
     my $two  = _two($c);
 
     {
-        my $twok = _copy($c, $k);           # twok = k
-        _mul($c, $twok, $two);              #          * 2
+        my $twok = _copy($c, $k);               # twok = k
+        _mul($c, $twok, $two);                  #          * 2
 
-        if (_acmp($c, $twok, $n) > 0) {     # if 2*k > n
-            _sub($c, $n, $k, 1);            # k = n - k
+        if (_acmp($c, $twok, $n) > 0) {         # if 2*k > n
+            $k = _sub($c, _copy($c, $n), $k);   # k = n - k
         }
+    }
+
+    if (_is_zero($c, $k)) {
+        return _one($c);
     }
 
     # Initialize output.
 
-    my $nok = _copy($c, $n);                # nok = n
-    _sub($c, $nok, $k);                     #         - k
-    _inc($c, $nok);                         #         + 1
+    my $nok = _copy($c, $n);                    # nok = n
+    _sub($c, $nok, $k);                         #         - k
+    _inc($c, $nok);                             #         + 1
 
     # Initialize factors.
 
-    my $f = _copy($c, $nok);                # f = n - k + 1
-    _inc($c, $f);                           #       + 1
+    my $f = _copy($c, $nok);                    # f = n - k + 1
+    _inc($c, $f);                               #       + 1
 
     my $d = $two;
 
     while (_acmp($c, $f, $n) <= 0) {
-        _mul($c, $nok, $f);                 # nok = nok * f
-        _div($c, $nok, $d);                 # nok = nok / d
-        _inc($c, $f);                       # f = f + 1
-        _inc($c, $d);                       # d = d + 1
+        _mul($c, $nok, $f);                     # nok = nok * f
+        _div($c, $nok, $d);                     # nok = nok / d
+        _inc($c, $f);                           # f = f + 1
+        _inc($c, $d);                           # d = d + 1
     }
 
     return $nok;

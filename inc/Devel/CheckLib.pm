@@ -5,8 +5,8 @@ package Devel::CheckLib;
 use 5.00405; #postfix foreach
 use strict;
 use vars qw($VERSION @ISA @EXPORT);
-$VERSION = '0.8';
-use Config;
+$VERSION = '0.92';
+use Config qw(%Config);
 use Text::ParseWords 'quotewords';
 
 use File::Spec;
@@ -189,7 +189,7 @@ sub assert_lib {
     # work-a-like for Makefile.PL's LIBS and INC arguments
     # if given as command-line argument, append to %args
     for my $arg (@ARGV) {
-        for my $mm_attr_key qw(LIBS INC) {
+        for my $mm_attr_key (qw(LIBS INC)) {
             if (my ($mm_attr_value) = $arg =~ /\A $mm_attr_key = (.*)/x) {
             # it is tempting to put some \s* into the expression, but the
             # MM command-line parser only accepts LIBS etc. followed by =,
@@ -330,8 +330,9 @@ sub _cleanup_exe {
 }
     
 sub _findcc {
-    my @flags = grep { length } map { quotewords('\s+', 0, $_) }
-        @Config{qw(ccflags ldflags)};
+    # Need to use $keep=1 to work with MSWin32 backslashes and quotes
+    my @Config_ccflags_ldflags =  @Config{qw(ccflags ldflags)};  # use copy so ASPerl will compile
+    my @flags = grep { length } map { quotewords('\s+', 1, $_ || ()) } @Config_ccflags_ldflags;
     my @paths = split(/$Config{path_sep}/, $ENV{PATH});
     my @cc = split(/\s+/, $Config{cc});
     return (@cc, @flags) if -x $cc[0];

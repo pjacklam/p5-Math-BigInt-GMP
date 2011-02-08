@@ -1,3 +1,16 @@
+2011-02-08 v1.35 pjacklam ( tests)
+  * Rename files for testing signature, module loading, and POD so the names
+    are within the 8+3 character limit (Peter John Acklam).
+  * Rename method _nok_ok() to the correct _nok(). There ought to have been a
+    test catching an error like that (Peter John Acklam).
+  * Fix _nok() giving wrong output when second input argument is zero
+    (Peter John Acklam).
+  * Fix _nok() so it doesn't modify its second input arg (Peter John Acklam).
+  * Update the included Devel::CheckLib to most recent version as suggested in
+    RE #63055 (Peter John Acklam).
+  * Apply "chmod 0644" to the few test scripts that don't already have that
+    mode (Peter John Acklam).
+
 2011-02-07 v1.34 pjacklam (6361 tests)
   * Rename _num() to _str(). The old _num() did exactly what _str() is supposed
     to do, according to the API documentation (Peter John Acklam).
