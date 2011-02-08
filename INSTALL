@@ -11,30 +11,30 @@ INSTALL
 
 How to install:
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+        perl Makefile.PL
+        make
+        make test
+        make install
 
 If you have trouble compiling this package because the GMP library is
 installed in a non-standard location, try to pass the INC and LIBS
 arguments to Makefile.PL with the appropriate information. Here
 is an example:
 
-	perl Makefile.PL\
-	 INC="-I/apps/perl588/site/gmp-4.2.1/include"\
-	 LIBS="-L/apps/perl588/site/gmp-4.2.1/lib -lgmp"
+        perl Makefile.PL\
+         INC="-I/apps/perl588/site/gmp-4.2.1/include"\
+         LIBS="-L/apps/perl588/site/gmp-4.2.1/lib -lgmp"
 
 USAGE
 =====
 
 To use it, replace:
 
-	use Math::BigInt;
+        use Math::BigInt;
 
 with this:
 
-	use Math::BigInt lib => 'GMP';
+        use Math::BigInt lib => 'GMP';
 
 Since Math::BigInt will fallback to a pure-perl implementation, it is safe
 to always use lib => 'GMP'.
@@ -45,7 +45,7 @@ use this module and when not.
 More information including HTMLified help and preliminary benchmark results
 are available under:
 
-	http://bloodgate.com/perl/
+        http://bloodgate.com/perl/
 
 Please send me test-reports, your experiences with this and your ideas - I love
 to hear about my work!

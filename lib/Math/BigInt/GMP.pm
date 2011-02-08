@@ -9,30 +9,81 @@ use 5.006002;
 
 use vars qw/$VERSION/;
 
-$VERSION = '1.33';
+$VERSION = '1.34';
 
 use XSLoader;
 XSLoader::load "Math::BigInt::GMP", $VERSION;
 
-sub import { }			# catch and throw away
-sub api_version() { 2; }	# we are compatible with MBI v1.83 and up
+sub import { }                  # catch and throw away
+sub api_version() { 2; }
 
-BEGIN
-  {
-  # both _num and _str just return a string
-  *_str = \&_num;
-  }
-
-##############################################################################
+###############################################################################
 # Routines not present here are in GMP.xs
 
-sub _digit
-  {
-  # return the nth digit, negative values count backward; this is costly!
-  my ($c,$x,$n) = @_;
+##############################################################################
+# Return the nth digit, negative values count backward.
 
-  $n++; substr( Math::BigInt::GMP::_num($c,$x), -$n, 1 );
-  }
+sub _digit {
+    my ($c, $x, $n) = @_;
+
+    my $str = _str($c, $x);
+    $n ++;
+    substr($str , -$n, 1);
+}
+
+# Return a Perl numerical scalar.
+
+sub _num {
+    my ($c, $x) = @_;
+    return 0 + _str($c, $x);
+}
+
+# Return binomial coefficient (n over k). The code is based on _nok() in
+# Math::BigInt::Calc.
+
+sub _nok_ok {
+    my ($c, $n, $k) = @_;
+
+    if (_is_zero($c, $k)) {
+        return _one($c);
+    }
+
+    # If k > n/2, or, equivalently, 2*k > n, compute nok(n, k) as
+    # nok(n, n-k), to minimize the number if iterations in the loop.
+
+    my $two  = _two($c);
+
+    {
+        my $twok = _copy($c, $k);           # twok = k
+        _mul($c, $twok, $two);              #          * 2
+
+        if (_acmp($c, $twok, $n) > 0) {     # if 2*k > n
+            _sub($c, $n, $k, 1);            # k = n - k
+        }
+    }
+
+    # Initialize output.
+
+    my $nok = _copy($c, $n);                # nok = n
+    _sub($c, $nok, $k);                     #         - k
+    _inc($c, $nok);                         #         + 1
+
+    # Initialize factors.
+
+    my $f = _copy($c, $nok);                # f = n - k + 1
+    _inc($c, $f);                           #       + 1
+
+    my $d = $two;
+
+    while (_acmp($c, $f, $n) <= 0) {
+        _mul($c, $nok, $f);                 # nok = nok * f
+        _div($c, $nok, $d);                 # nok = nok / d
+        _inc($c, $f);                       # f = f + 1
+        _inc($c, $d);                       # d = d + 1
+    }
+
+    return $nok;
+}
 
 ###############################################################################
 # routine to test internal state for corruptions
@@ -57,9 +108,10 @@ sub _log_int
   $base = _new($c,$base) unless ref $base;
 
   # BASE 0 or 1 => NaN
-  return if _is_zero($c,$base) || _is_one($c,$base);
+  return if (_is_zero($c, $base) ||
+             _is_one($c, $base));
 
-  my $cmp = _acmp($c,$x,$base); 	# X == BASE => 1
+  my $cmp = _acmp($c,$x,$base);         # X == BASE => 1
   if ($cmp == 0)
     {
     # return one
@@ -74,7 +126,7 @@ sub _log_int
   # Compute a guess for the result based on:
   # $guess = int ( length_in_base_10(X) / ( log(base) / log(10) ) )
   my $len = _alen($c,$x);
-  my $log = log( _num($c,$base) ) / log(10);
+  my $log = log( _str($c,$base) ) / log(10);
 
   # calculate now a guess based on the values obtained above:
   my $x_org = _copy($c,$x);
@@ -123,7 +175,7 @@ sub _log_int
 
 sub STORABLE_freeze {
     my ($self, $cloning) = @_;
-    return Math::BigInt::GMP->_num($self);
+    return Math::BigInt::GMP->_str($self);
 }
 
 sub STORABLE_thaw {
@@ -133,6 +185,7 @@ sub STORABLE_thaw {
 }
 
 1;
+
 __END__
 
 =pod
@@ -143,7 +196,7 @@ Math::BigInt::GMP - Use the GMP library for Math::BigInt routines
 
 =head1 SYNOPSIS
 
-Provides support for big integer calculations via means of the GMP c-library.
+Provides support for big integer calculations by means of the GMP c-library.
 
 Math::BigInt::GMP now no longer uses Math::GMP, but provides it's own XS layer
 to access the GMP c-library. This cut's out another (perl sub routine) layer
@@ -151,18 +204,19 @@ and also reduces the memory footprint by not loading Math::GMP and Carp at
 all.
 
 =head1 LICENSE
- 
+
 This program is free software; you may redistribute it and/or modify it under
-the same terms as Perl itself. 
+the same terms as Perl itself.
 
 =head1 AUTHOR
 
-Tels <http://bloodgate.com/> in 2001-2007.
+Tels E<lt>http://bloodgate.com/E<gt> in 2001-2007.
 
 Thanx to Chip Turner for providing Math::GMP, which was inspiring my work.
 
 =head1 SEE ALSO
 
-L<Math::BigInt>, L<Math::BigInt::Calc>.
+L<Math::BigInt>, L<Math::BigInt::Calc>, L<Math::BigInt::FastCalc>,
+L<Math::BigInt::Pari>.
 
 =cut

@@ -34,10 +34,10 @@ typedef mpz_t mpz_t_ornull;
 #  define GMP_HAS_MAGICEXT 0
 #endif
 
-#define NEW_GMP_MPZ_T	   RETVAL = malloc (sizeof(mpz_t));
+#define NEW_GMP_MPZ_T      RETVAL = malloc (sizeof(mpz_t));
 #define NEW_GMP_MPZ_T_INIT RETVAL = malloc (sizeof(mpz_t)); mpz_init(*RETVAL);
 #define GMP_GET_ARG_0      TEMP = mpz_from_sv(x);
-#define GMP_GET_ARG_1 	   TEMP_1 = mpz_from_sv(y);
+#define GMP_GET_ARG_1      TEMP_1 = mpz_from_sv(y);
 #define GMP_GET_ARGS_0_1   GMP_GET_ARG_0; GMP_GET_ARG_1;
 
 #if GMP_THREADSAFE
@@ -154,7 +154,7 @@ Math::BigInt::GMP XS code, loosely based on Math::GMP, a Perl module for
 high-speed arbitrary size integer calculations (C) 2000 James H. Turner
 */
 
-MODULE = Math::BigInt::GMP		PACKAGE = Math::BigInt::GMP
+MODULE = Math::BigInt::GMP              PACKAGE = Math::BigInt::GMP
 PROTOTYPES: ENABLE
 
 ##############################################################################
@@ -162,7 +162,7 @@ PROTOTYPES: ENABLE
 
 mpz_t *
 _new(Class,x)
-	SV*	x
+        SV*     x
 
   CODE:
     NEW_GMP_MPZ_T;
@@ -202,7 +202,7 @@ _new_attach(Class,sv,x)
 
 mpz_t *
 _from_bin(Class,x)
-	SV*	x
+        SV*     x
 
   CODE:
     NEW_GMP_MPZ_T;
@@ -215,7 +215,7 @@ _from_bin(Class,x)
 
 mpz_t *
 _from_hex(Class,x)
-	SV*	x
+        SV*     x
 
   CODE:
     NEW_GMP_MPZ_T;
@@ -228,7 +228,7 @@ _from_hex(Class,x)
 
 mpz_t *
 _from_oct(Class,x)
-	SV*	x
+        SV*     x
 
   CODE:
     NEW_GMP_MPZ_T;
@@ -241,8 +241,8 @@ _from_oct(Class,x)
 
 void
 _set(Class,n,x)
-	mpz_t*	n
-	SV*	x
+        mpz_t*  n
+        SV*     x
 
   CODE:
     mpz_init_set_ui(*n, SvIV(x));
@@ -314,7 +314,7 @@ _1ex(Class,x)
 
 void
 DESTROY(n)
-	mpz_t_ornull*	n
+        mpz_t_ornull*   n
 
   PPCODE:
     if (n) {
@@ -323,11 +323,11 @@ DESTROY(n)
     }
 
 ##############################################################################
-# _num() - numify, return string so that atof() and atoi() can use it
+# _str() - return string so that atof() and atoi() can use it
 
 SV *
-_num(Class, n)
-	mpz_t*	n
+_str(Class, n)
+        mpz_t*  n
   PREINIT:
     int len;
     char *buf;
@@ -336,16 +336,16 @@ _num(Class, n)
   CODE:
     /* len is always >= 1, and might be off (greater) by one than real len */
     len = mpz_sizeinbase(*n, 10);
-    RETVAL = newSV(len);		/* alloc len +1 bytes */
+    RETVAL = newSV(len);                /* alloc len +1 bytes */
     SvPOK_on(RETVAL);
-    buf = SvPVX(RETVAL);		/* get ptr to storage */ 
-    buf_end = buf + len - 1;		/* end of storage (-1)*/
-    mpz_get_str(buf, 10, *n);		/* convert to decimal string */
+    buf = SvPVX(RETVAL);                /* get ptr to storage */
+    buf_end = buf + len - 1;            /* end of storage (-1)*/
+    mpz_get_str(buf, 10, *n);           /* convert to decimal string */
     if (*buf_end == 0)
       {
-      len --;				/* got one shorter than expected */
+      len --;                           /* got one shorter than expected */
       }
-    SvCUR_set(RETVAL, len); 		/* so set real length */
+    SvCUR_set(RETVAL, len);             /* so set real length */
    OUTPUT:
      RETVAL
 
@@ -354,7 +354,7 @@ _num(Class, n)
 
 int
 _len(Class, n)
-	mpz_t*	n
+        mpz_t*  n
   PREINIT:
     char *buf;
     char *buf_end;
@@ -362,16 +362,16 @@ _len(Class, n)
   CODE:
     /* len is always >= 1, and might be off (greater) by one than real len */
     RETVAL = mpz_sizeinbase(*n, 10);
-    if (RETVAL > 1)			/* is at least 10? */
+    if (RETVAL > 1)                     /* is at least 10? */
       {
-      New(0, buf, RETVAL + 1, I8);	/* alloc scratch buffer (len+1) bytes */
-      buf_end = buf + RETVAL - 1;	/* end of storage (-1)*/
-      mpz_get_str(buf, 10, *n);		/* convert to decimal string */
+      New(0, buf, RETVAL + 1, I8);      /* alloc scratch buffer (len+1) bytes */
+      buf_end = buf + RETVAL - 1;       /* end of storage (-1)*/
+      mpz_get_str(buf, 10, *n);         /* convert to decimal string */
       if (*buf_end == 0)
         {
-        RETVAL --;			/* got one shorter than expected */
+        RETVAL --;                      /* got one shorter than expected */
         }
-      Safefree(buf);			/* free the scratch buffer */
+      Safefree(buf);                    /* free the scratch buffer */
       }
    OUTPUT:
      RETVAL
@@ -381,7 +381,7 @@ _len(Class, n)
 
 int
 _alen(Class, n)
-	mpz_t*	n
+        mpz_t*  n
 
   CODE:
     /* len is always >= 1, and might be off (greater) by one than real len */
@@ -398,7 +398,7 @@ _alen(Class, n)
 
 int
 _zeros(Class,n)
-	mpz_t*	n
+        mpz_t*  n
 
   PREINIT:
     int len;
@@ -409,31 +409,31 @@ _zeros(Class,n)
     /* odd numbers can not have trailing zeros */
     RETVAL = 1 - mpz_tstbit(*n,0);
 
-    if (RETVAL != 0)			/* was even */
+    if (RETVAL != 0)                    /* was even */
       {
       /* len is always >= 1, and might be off (greater) by one than real len */
       RETVAL = 0;
       len = mpz_sizeinbase(*n, 10);
-      if (len > 1)			/* '0' has no trailing zeros! */
-	{
-	New(0, buf, len + 1, I8);
-	mpz_get_str(buf, 10, *n);	/* convert to decimal string */
-	buf_end = buf + len - 1;
-	if (*buf_end == 0)		/* points to terminating zero? */
-	  {
-          buf_end--;			/* ptr to last real digit */
-          len--;			/* got one shorter than expected */
+      if (len > 1)                      /* '0' has no trailing zeros! */
+        {
+        New(0, buf, len + 1, I8);
+        mpz_get_str(buf, 10, *n);       /* convert to decimal string */
+        buf_end = buf + len - 1;
+        if (*buf_end == 0)              /* points to terminating zero? */
+          {
+          buf_end--;                    /* ptr to last real digit */
+          len--;                        /* got one shorter than expected */
           }
-	while (len-- > 0)		/* actually, we should hit a non-zero before the end */
-	  {
-	  if (*buf_end-- != '0')
-	    {
-	    break;
-	    }
+        while (len-- > 0)               /* actually, we should hit a non-zero before the end */
+          {
+          if (*buf_end-- != '0')
+            {
+            break;
+            }
           RETVAL++;
-	  }
-        Safefree(buf);			/* free the scratch buffer */
-	}
+          }
+        Safefree(buf);                  /* free the scratch buffer */
+        }
       } /* end if n was even */
   OUTPUT:
     RETVAL
@@ -443,21 +443,21 @@ _zeros(Class,n)
 
 SV *
 _as_hex(Class,n)
-	mpz_t *	n
+        mpz_t * n
 
   PREINIT:
     int len;
     char *buf;
-    
+
   CODE:
     /* len is always >= 1, and accurate (unlike in decimal) */
     len = mpz_sizeinbase(*n, 16) + 2;
-    RETVAL = newSV(len);		/* alloc len +1 (+2 for '0x') bytes */
+    RETVAL = newSV(len);                /* alloc len +1 (+2 for '0x') bytes */
     SvPOK_on(RETVAL);
-    buf = SvPVX(RETVAL);		/* get ptr to storage */
-    *buf++ = '0'; *buf++ = 'x';		/* prepend '0x' */
-    mpz_get_str(buf, 16, *n);		/* convert to hexadecimal string */
-    SvCUR_set(RETVAL, len); 		/* so set real length */
+    buf = SvPVX(RETVAL);                /* get ptr to storage */
+    *buf++ = '0'; *buf++ = 'x';         /* prepend '0x' */
+    mpz_get_str(buf, 16, *n);           /* convert to hexadecimal string */
+    SvCUR_set(RETVAL, len);             /* so set real length */
   OUTPUT:
     RETVAL
 
@@ -466,21 +466,21 @@ _as_hex(Class,n)
 
 SV *
 _as_bin(Class,n)
-	mpz_t *	n
+        mpz_t * n
 
   PREINIT:
     int len;
     char *buf;
-    
+
   CODE:
     /* len is always >= 1, and accurate (unlike in decimal) */
     len = mpz_sizeinbase(*n, 2) + 2;
-    RETVAL = newSV(len);		/* alloc len +1 (+2 for '0b') bytes */
+    RETVAL = newSV(len);                /* alloc len +1 (+2 for '0b') bytes */
     SvPOK_on(RETVAL);
-    buf = SvPVX(RETVAL);		/* get ptr to storage */ 
-    *buf++ = '0'; *buf++ = 'b';		/* prepend '0b' */
-    mpz_get_str(buf, 2, *n);		/* convert to binary string */
-    SvCUR_set(RETVAL, len); 		/* so set real length */
+    buf = SvPVX(RETVAL);                /* get ptr to storage */
+    *buf++ = '0'; *buf++ = 'b';         /* prepend '0b' */
+    mpz_get_str(buf, 2, *n);            /* convert to binary string */
+    SvCUR_set(RETVAL, len);             /* so set real length */
   OUTPUT:
     RETVAL
 
@@ -489,21 +489,21 @@ _as_bin(Class,n)
 
 SV *
 _as_oct(Class,n)
-	mpz_t *	n
+        mpz_t * n
 
   PREINIT:
     int len;
     char *buf;
-    
+
   CODE:
     /* len is always >= 1, and accurate (unlike in decimal) */
     len = mpz_sizeinbase(*n, 8) + 1;
-    RETVAL = newSV(len);		/* alloc len +1 (+1 for '0') bytes */
+    RETVAL = newSV(len);                /* alloc len +1 (+1 for '0') bytes */
     SvPOK_on(RETVAL);
-    buf = SvPVX(RETVAL);		/* get ptr to storage */ 
-    *buf++ = '0';			/* prepend '0' */
-    mpz_get_str(buf, 8, *n);		/* convert to binary string */
-    SvCUR_set(RETVAL, len); 		/* so set real length */
+    buf = SvPVX(RETVAL);                /* get ptr to storage */
+    *buf++ = '0';                       /* prepend '0' */
+    mpz_get_str(buf, 8, *n);            /* convert to binary string */
+    SvCUR_set(RETVAL, len);             /* so set real length */
   OUTPUT:
     RETVAL
 
@@ -512,9 +512,9 @@ _as_oct(Class,n)
 
 mpz_t *
 _modpow(Class, n, exp, mod)
-       mpz_t*	n
-       mpz_t*	exp
-       mpz_t*	mod
+       mpz_t*   n
+       mpz_t*   exp
+       mpz_t*   mod
 
   CODE:
     NEW_GMP_MPZ_T_INIT;
@@ -525,7 +525,7 @@ _modpow(Class, n, exp, mod)
 ##############################################################################
 # _modinv() - compute the inverse of x % y
 #
-# int mpz_invert (mpz_t rop, mpz_t op1, mpz_t op2) 	Function
+# int mpz_invert (mpz_t rop, mpz_t op1, mpz_t op2)      Function
 # Compute the inverse of op1 modulo op2 and put the result in rop. If the
 # inverse exists, the return value is non-zero and rop will satisfy
 # 0 <= rop < op2. If an inverse doesn't exist the return value is zero and rop
@@ -533,8 +533,8 @@ _modpow(Class, n, exp, mod)
 
 void
 _modinv(Class,x,y)
-	mpz_t*	x
-	mpz_t*	y
+        mpz_t*  x
+        mpz_t*  y
 
   PREINIT:
     int rc, sign;
@@ -543,7 +543,7 @@ _modinv(Class,x,y)
   PPCODE:
     NEW_GMP_MPZ_T_INIT;
     rc = mpz_invert(*RETVAL, *x, *y);
-    EXTEND(SP, 2);	/* we return two values */
+    EXTEND(SP, 2);      /* we return two values */
     if (rc == 0)
       {
       /* Inverse doesn't exist. Return both values undefined. */
@@ -555,8 +555,8 @@ _modinv(Class,x,y)
       /* Inverse exists. When the modulus to mpz_invert() is positive,
        * the returned value is also positive. */
       PUSHs(sv_2mortal(sv_from_mpz(RETVAL)));
-	s = sv_newmortal();
-	sv_setpvn (s, "+", 1);
+        s = sv_newmortal();
+        sv_setpvn (s, "+", 1);
       PUSHs ( s );
       }
 
@@ -565,13 +565,13 @@ _modinv(Class,x,y)
 
 void
 _add(Class,x,y)
-	SV*	x
-	SV*	y
+        SV*     x
+        SV*     y
   PREINIT:
-	mpz_t* TEMP;  
-	mpz_t* TEMP_1;
+        mpz_t* TEMP;
+        mpz_t* TEMP_1;
   PPCODE:
-    GMP_GET_ARGS_0_1;	/* (TEMP, TEMP_1) = (x,y)  */
+    GMP_GET_ARGS_0_1;   /* (TEMP, TEMP_1) = (x,y)  */
     mpz_add(*TEMP, *TEMP, *TEMP_1);
     PUSHs( x );
 
@@ -581,11 +581,11 @@ _add(Class,x,y)
 
 void
 _inc(Class,x)
-	SV*	x
+        SV*     x
   PREINIT:
-	mpz_t* TEMP;  
+        mpz_t* TEMP;
   PPCODE:
-    GMP_GET_ARG_0;	/* TEMP =  mpz_t(x)  */
+    GMP_GET_ARG_0;      /* TEMP =  mpz_t(x)  */
     mpz_add_ui(*TEMP, *TEMP, 1);
     PUSHs( x );
 
@@ -594,11 +594,11 @@ _inc(Class,x)
 
 void
 _dec(Class,x)
-	SV*	x
+        SV*     x
   PREINIT:
-	mpz_t* TEMP;  
+        mpz_t* TEMP;
   PPCODE:
-    GMP_GET_ARG_0;	/* TEMP =  mpz_t(x)  */
+    GMP_GET_ARG_0;      /* TEMP =  mpz_t(x)  */
     mpz_sub_ui(*TEMP, *TEMP, 1);
     PUSHs( x );
 
@@ -621,10 +621,10 @@ _sub(Class,x,y, ...)
         mpz_t* TEMP;
         mpz_t* TEMP_1;
   PPCODE:
-    GMP_GET_ARGS_0_1;	/* (TEMP, TEMP_1) = (x,y)  */
-    if ( items == 4 && SvTRUE(ST(3)) ) 
+    GMP_GET_ARGS_0_1;   /* (TEMP, TEMP_1) = (x,y)  */
+    if ( items == 4 && SvTRUE(ST(3)) )
       {
-      /* y -= x */ 
+      /* y -= x */
       mpz_sub(*TEMP_1, *TEMP, *TEMP_1);
       PUSHs( y );
       }
@@ -640,17 +640,17 @@ _sub(Class,x,y, ...)
 
 void
 _rsft(Class,x,y,base_sv)
-	SV*	x
-	SV*	y
-	SV*	base_sv
+        SV*     x
+        SV*     y
+        SV*     base_sv
   PREINIT:
-	unsigned long	y_ui;
-	mpz_t*	TEMP;
-	mpz_t*	TEMP_1;
-	mpz_t*	BASE;
+        unsigned long   y_ui;
+        mpz_t*  TEMP;
+        mpz_t*  TEMP_1;
+        mpz_t*  BASE;
 
   PPCODE:
-    GMP_GET_ARGS_0_1;	/* (TEMP, TEMP_1) = (x,y)  */
+    GMP_GET_ARGS_0_1;   /* (TEMP, TEMP_1) = (x,y)  */
 
     y_ui = mpz_get_ui(*TEMP_1);
     BASE = malloc (sizeof(mpz_t));
@@ -667,17 +667,17 @@ _rsft(Class,x,y,base_sv)
 
 void
 _lsft(Class,x,y,base_sv)
-	SV*	x
-	SV*	y
-	SV*	base_sv
+        SV*     x
+        SV*     y
+        SV*     base_sv
   PREINIT:
-	unsigned long	y_ui;
-	mpz_t*	TEMP;
-	mpz_t*	TEMP_1;
-	mpz_t*	BASE;
+        unsigned long   y_ui;
+        mpz_t*  TEMP;
+        mpz_t*  TEMP_1;
+        mpz_t*  BASE;
 
   PPCODE:
-    GMP_GET_ARGS_0_1;	/* (TEMP, TEMP_1) = (x,y)  */
+    GMP_GET_ARGS_0_1;   /* (TEMP, TEMP_1) = (x,y)  */
 
     y_ui = mpz_get_ui(*TEMP_1);
     BASE = malloc (sizeof(mpz_t));
@@ -700,7 +700,7 @@ _mul(Class,x,y)
         mpz_t* TEMP;
         mpz_t* TEMP_1;
   PPCODE:
-    GMP_GET_ARGS_0_1;	/* (TEMP, TEMP_1) = (x,y)  */
+    GMP_GET_ARGS_0_1;   /* (TEMP, TEMP_1) = (x,y)  */
     mpz_mul(*TEMP, *TEMP, *TEMP_1);
     PUSHs( x );
 
@@ -729,7 +729,7 @@ _div(Class,x,y)
     mpz_t* TEMP_1;
     mpz_t * rem;
   PPCODE:
-    GMP_GET_ARGS_0_1;	/* (TEMP, TEMP_1) = (x,y)  */
+    GMP_GET_ARGS_0_1;   /* (TEMP, TEMP_1) = (x,y)  */
     if (GIMME_V == G_ARRAY)
       {
       /* former bdiv_two() routine */
@@ -743,7 +743,7 @@ _div(Class,x,y)
     else
       {
       /* former div_two() routine */
-      mpz_div(*TEMP, *TEMP, *TEMP_1);			/* x /= y */
+      mpz_div(*TEMP, *TEMP, *TEMP_1);                   /* x /= y */
       PUSHs( x );
       }
 
@@ -758,7 +758,7 @@ _mod(Class,x,y)
         mpz_t* TEMP;
         mpz_t* TEMP_1;
   PPCODE:
-    GMP_GET_ARGS_0_1;	/* (TEMP, TEMP_1) = (x,y)  */
+    GMP_GET_ARGS_0_1;   /* (TEMP, TEMP_1) = (x,y)  */
     mpz_mod(*TEMP, *TEMP, *TEMP_1);
     PUSHs( x );
 
@@ -767,8 +767,8 @@ _mod(Class,x,y)
 
 int
 _acmp(Class,m,n)
-	mpz_t *	m
-	mpz_t *	n
+        mpz_t * m
+        mpz_t * n
 
   CODE:
     RETVAL = mpz_cmp(*m, *n);
@@ -778,11 +778,11 @@ _acmp(Class,m,n)
     RETVAL
 
 ##############################################################################
-# _is_zero()  
+# _is_zero()
 
 int
 _is_zero(Class,x)
-	mpz_t *	x
+        mpz_t * x
 
   CODE:
     RETVAL = mpz_cmp_ui(*x, 0);
@@ -791,11 +791,11 @@ _is_zero(Class,x)
     RETVAL
 
 ##############################################################################
-# _is_one()  
+# _is_one()
 
 int
 _is_one(Class,x)
-	mpz_t *	x
+        mpz_t * x
 
   CODE:
     RETVAL = mpz_cmp_ui(*x, 1);
@@ -804,11 +804,11 @@ _is_one(Class,x)
     RETVAL
 
 ##############################################################################
-# _is_two()  
+# _is_two()
 
 int
 _is_two(Class,x)
-	mpz_t *	x
+        mpz_t * x
 
   CODE:
     RETVAL = mpz_cmp_ui(*x, 2);
@@ -817,11 +817,11 @@ _is_two(Class,x)
     RETVAL
 
 ##############################################################################
-# _is_ten()  
+# _is_ten()
 
 int
 _is_ten(Class,x)
-	mpz_t *	x
+        mpz_t * x
 
   CODE:
     RETVAL = mpz_cmp_ui(*x, 10);
@@ -840,7 +840,7 @@ _pow(Class,x,y)
         mpz_t* TEMP;
         mpz_t* TEMP_1;
   PPCODE:
-    GMP_GET_ARGS_0_1;	/* (TEMP, TEMP_1) = (x,y)  */
+    GMP_GET_ARGS_0_1;   /* (TEMP, TEMP_1) = (x,y)  */
     mpz_pow_ui(*TEMP, *TEMP, mpz_get_ui( *TEMP_1 ) );
     PUSHs( x );
 
@@ -849,8 +849,8 @@ _pow(Class,x,y)
 
 mpz_t *
 _gcd(Class,x,y)
-	mpz_t*	x
-	mpz_t*	y
+        mpz_t*  x
+        mpz_t*  y
 
   CODE:
     NEW_GMP_MPZ_T_INIT;
@@ -869,7 +869,7 @@ _and(Class,x,y)
         mpz_t* TEMP;
         mpz_t* TEMP_1;
   PPCODE:
-    GMP_GET_ARGS_0_1;	/* (TEMP, TEMP_1) = (x,y)  */
+    GMP_GET_ARGS_0_1;   /* (TEMP, TEMP_1) = (x,y)  */
     mpz_and(*TEMP, *TEMP, *TEMP_1);
     PUSHs( x );
 
@@ -925,7 +925,7 @@ _fac(Class,x)
 
 mpz_t *
 _copy(Class,m)
-	mpz_t*	m
+        mpz_t*  m
 
   CODE:
     NEW_GMP_MPZ_T;
@@ -939,7 +939,7 @@ _copy(Class,m)
 
 int
 _is_odd(Class,n)
-	mpz_t*	n
+        mpz_t*  n
 
   CODE:
    RETVAL = mpz_tstbit(*n,0);
@@ -951,7 +951,7 @@ _is_odd(Class,n)
 
 int
 _is_even(Class,n)
-	mpz_t*	n
+        mpz_t*  n
 
   CODE:
      RETVAL = ! mpz_tstbit(*n,0);
@@ -986,4 +986,3 @@ _root(Class,x,y)
     GMP_GET_ARGS_0_1;   /* (TEMP, TEMP_1) = (x,y)  */
     mpz_root(*TEMP, *TEMP, mpz_get_ui(*TEMP_1));
     PUSHs( x );
-

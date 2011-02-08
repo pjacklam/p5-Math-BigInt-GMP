@@ -2,15 +2,15 @@
 
 use strict;
 use Test::More tests => 2322
-    + 5;		# own tests
+    + 4;		# own tests
 
 
-use Math::BigInt lib => 'Calc';
+use Math::BigInt lib => 'GMP';
 use Math::BigFloat;
 
 use vars qw ($class $try $x $y $f @args $ans $ans1 $ans1_str $setup $CL);
 $class = "Math::BigFloat";
-$CL = "Math::BigInt::Calc";
+$CL = "Math::BigInt::GMP";
 
 is ($class->config()->{class},$class);
 is ($class->config()->{with}, $CL);
@@ -24,6 +24,8 @@ $c = Math::BigFloat->new('0.008'); my $d = Math::BigFloat->new(3);
 my $e = $c->bdiv(Math::BigFloat->new(3),$d);
 
 is ($e,'0.00267'); # '0.008 / 3 => 0.0027');
-is (ref($e->{_e}->[0]), ''); # 'Not a BigInt');
+
+# The following test assumes that the Math::BigInt::Calc library is used.
+#is (ref($e->{_e}->[0]), ''); # 'Not a BigInt');
 
 require 't/bigfltpm.inc';	# all tests here for sharing

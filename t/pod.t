@@ -1,26 +1,13 @@
 #!/usr/bin/perl -w
 
+use strict;             # restrict unsafe constructs
+
 use Test::More;
-use strict;
-   
-my $tests;
 
-BEGIN
-   {
-   $tests = 1;
-   plan tests => $tests;
-   chdir 't' if -d 't';
-   use lib '../lib';
-   };
+# Ensure a recent version of Test::Pod
 
-SKIP:
-  {
-  skip( 'Test::Pod not installed on this system', $tests )
-    unless do
-      {
-      eval "use Test::Pod;";
-      $@ ? 0 : 1;
-      };
-  pod_file_ok( '../lib/Math/BigInt/GMP.pm' );
-  }
+my $min_tp = 1.22;
+eval "use Test::Pod $min_tp";
+plan skip_all => "Test::Pod $min_tp required for testing POD" if $@;
 
+all_pod_files_ok();

@@ -1,13 +1,31 @@
-2011-01-30 v1.33 pjacklam
+2011-02-07 v1.34 pjacklam (6361 tests)
+  * Rename _num() to _str(). The old _num() did exactly what _str() is supposed
+    to do, according to the API documentation (Peter John Acklam).
+  * Add a _num() function which (currently) simply numifies the output from
+    _str() (Peter John Acklam).
+  * Clean up whitespace (Peter John Acklam).
+  * Fix POD errors (Peter John Acklam).
+  * Add _nok() method. Now the old claim that Math::BigInt::GMP conforms to API
+    version 2 is actually true (Peter John Acklam).
+  * Edit the test files that were copied from the Math::BigInt distribution, so
+    we now test Math::BigInt against Math::BigInt::GMP, not Math::BigInt::Calc.
+    I had forgotten this when I copied the test files from the Math::BigInt
+    distribution. This reduces the total test count, since some test are not
+    executed with Math::BigInt::GMP (Peter John Acklam).
+  * Replace morse code in 'README' with proper text (Peter John Acklam).
+  * Include '01-load.t' for explicitly testing module loading (Peter John
+    Acklam).
+  * Use more generic code in 'pod.t' and 'pod_cov.t' (Peter John Acklam).
 
+2011-01-30 v1.33 pjacklam (6411 tests)
   * Fix _modinv() so that it works the same way as _modinv() in other
     Math::BigInt libraries: The output arguments are an object and the
-    corresponding sign, not undef.
+    corresponding sign, not undef (Peter John Acklam).
   * Include most recent versions of the test files from the Math-BigInt
     distribution (bigfltpm.inc, bigfltpm.t, bigintpm.inc, bigintpm.t,
-    biglog.t, and bigroot.t).
-  * Include generic SIGNATURE test file.
-  * Required version of Math::BigInt is now 1.99_05.
+    biglog.t, and bigroot.t) (Peter John Acklam).
+  * Include generic SIGNATURE test file (Peter John Acklam).
+  * Required version of Math::BigInt is now 1.99_05 (Peter John Acklam).
 
 2010-09-23 v1.32 rafl 5559 tests
   * Re-upload 1.31 as a stable release without further changes.
@@ -117,30 +135,30 @@ Older Changelog:
  * removed auto-export and added empty import()
  * taken over tests from BigInt v1.42
 2001-11-01 v1.03 Tels
- * taken over tests from BigInt v1.45 
+ * taken over tests from BigInt v1.45
  * added _mod() for more speed for $x % $y
 
-	#!/usr/bin/perl -w
-	use lib 'lib';
-	#use lib '../Math-BigInt-GMP-1.02/lib';
-	use Math::BigInt lib => 'GMP';
-	use Benchmark;
-	my $digits = 1024;
-	my $x = Math::BigInt->new('1' . '0' x $digits);
-	my $y = Math::BigInt->new('3' . '0' x ($digits - 2) . '3');
-	my $u = Math::BigInt->new('3');
-	timethese ( 2000,
-	  {
-	  mod_l => sub { $z = $x % $y, },
-	  mod_s => sub { $z = $x % $u, },
-	  div_l => sub { ($z,$r) = $x->copy()->bdiv($y), },
-	  } );
+        #!/usr/bin/perl -w
+        use lib 'lib';
+        #use lib '../Math-BigInt-GMP-1.02/lib';
+        use Math::BigInt lib => 'GMP';
+        use Benchmark;
+        my $digits = 1024;
+        my $x = Math::BigInt->new('1' . '0' x $digits);
+        my $y = Math::BigInt->new('3' . '0' x ($digits - 2) . '3');
+        my $u = Math::BigInt->new('3');
+        timethese ( 2000,
+          {
+          mod_l => sub { $z = $x % $y, },
+          mod_s => sub { $z = $x % $u, },
+          div_l => sub { ($z,$r) = $x->copy()->bdiv($y), },
+          } );
 
-	On a 1 Ghz Athlon with v1.45 of BigInt in ops/s:
-		v1.02	v1.03
-	mod_s    1100	 2350 
-	mod_l    1111    2325
-	div_l    1260    1300
+        On a 1 Ghz Athlon with v1.45 of BigInt in ops/s:
+                v1.02   v1.03
+        mod_s    1100    2350
+        mod_l    1111    2325
+        div_l    1260    1300
 
 2001-11-01 v1.04a Tels (never released)
   * _is_odd()/_is_even() use $two instead of 2: 5600 op/s instead of 4700
@@ -168,7 +186,7 @@ Older Changelog:
   * fixed typos in CHANGES
   * added _from_bin()
 2002-07-07 v1.07 Tels
-  * testsuite from BigInt v1.60 - 4054 tests 
+  * testsuite from BigInt v1.60 - 4054 tests
   * fixed PREREQUISITES to BigInt v1.60
 2002-12-12 v1.08 Tels 4069 tests (never released)
   * added implementation of bmodpow() using GMPs mpow_gmp()
@@ -204,7 +222,7 @@ Older Changelog:
   * rewrote stringify_bin() and stringify_hex() to not allocate scratch buffers
     Faster, no longer needs malloc()/free() and strlen().
     Thanx to Sysiphus for pointing this out.
-  * removed _as_hex() and _as_bin() from GMP.pm and moved the logic to GMP.xs 
+  * removed _as_hex() and _as_bin() from GMP.pm and moved the logic to GMP.xs
   * documented in todo to replace all malloc()/free() with New and Safefree()
   * removed unused cmp_two() function in GMP.xs
   * removed the unused "$zero = ..."/"$one = ..." in GMP.pm

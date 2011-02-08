@@ -1,31 +1,27 @@
 #!/usr/bin/perl -w
 
+use strict;             # restrict unsafe constructs
+
 use Test::More;
-use strict;
 
-my $tests;
+# Ensure a recent version of Test::Pod::Coverage
 
-BEGIN
-   {
-   $tests = 1;
-   plan tests => $tests;
-   chdir 't' if -d 't';
-   use lib '../lib';
-   };
+my $min_tpc = 1.08;
+eval "use Test::Pod::Coverage $min_tpc";
+plan skip_all => "Test::Pod::Coverage $min_tpc required for testing POD coverage"
+    if $@;
 
-SKIP:
-  {
-  skip("Test::Pod::Coverage 1.08 required for testing POD coverage", $tests)
-    unless do {
-    eval "use Test::Pod::Coverage 1.08";
-    $@ ? 0 : 1;
-    };
+# Test::Pod::Coverage doesn't require a minimum Pod::Coverage version,
+# but older versions don't recognize some common documentation styles
 
-  my $trustme = {
+my $min_pc = 0.18;
+eval "use Pod::Coverage $min_pc";
+plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage"
+    if $@;
+
+my $trustme = {
     trustme => [ 'api_version', 'STORABLE_freeze', 'STORABLE_thaw' ],
     coverage_class => 'Pod::Coverage::CountParents',
-    };
-  pod_coverage_ok( 'Math::BigInt::GMP', $trustme, "All our Math::BigInt::GMP are covered" );
+  };
 
-  }
-
+all_pod_coverage_ok($trustme, "All our Math::BigInt::GMP are covered");

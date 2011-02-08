@@ -1,8 +1,3 @@
-
- for _nok()
-* Function: int mpz_fits_ulong_p (mpz_t op)
-  Function: void mpz_bin_ui (mpz_t rop, mpz_t n, unsigned long int k)
-
 * _lsft() and _rsft() could probably be a bit more optimized
 * move _log_int() to XS
 * _digit() should be in XS

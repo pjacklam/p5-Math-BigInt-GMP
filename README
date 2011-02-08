@@ -1,6 +1,6 @@
 Module to replace Math::BigInt's core math routines by using Math::GMP.
 
-(C) ..--- ----- ----- .---- by - . .-.. ... .-.-.-  All rights reserved.
+(C) 2001 by TELS. All rights reserved.
 
 This package contains a replacement (drop-in) module for Math::BigInt's core,
 Math::BigInt::Calc.pm. It needs the new versions of Math::BigInt and
@@ -10,8 +10,8 @@ You need to install the Gnu MP library aka libgmp to compile this module.
 
 How to install (replace the version below with the current one):
 
-	tar -xzf Math-BigInt-GMP-1.12.tar.gz
-	cpansign --verify
+        tar -xzf Math-BigInt-GMP-1.12.tar.gz
+        cpansign --verify
 
 If the signature does not verify ok, you might to install Module::Signature
 and get my key from <http://bloodgate.com/tels.asc>.
@@ -21,26 +21,26 @@ package when the signature is BAD - your system might get compromised!
 
 If the signature is good, do:
 
-	perl Makefile.PL
-	make
-	make test
+        perl Makefile.PL
+        make
+        make test
 
 and then as root:
 
-	make install
+        make install
 
 
 To use this module, replace:
 
-	use Math::BigInt;
+        use Math::BigInt;
 
 with this:
 
-	use Math::BigInt lib => 'GMP';
+        use Math::BigInt lib => 'GMP';
 
 or alternatively something like:
-	
-	use Math::BigInt lib => 'GMP,Pari,BitVect';
+
+        use Math::BigInt lib => 'GMP,Pari,BitVect';
 
 Please read the documentation under PERFORMANCE in Math::BigInt on when to
 use this module and when not. As of v1.10 and Math::BigInt v1.64/v1.64, using
@@ -50,15 +50,15 @@ code, almost all operations should be faster than just using Calc (the
 default pure-perl library used in Math::BigInt).
 
 So, the following:
-	
-	use Math::BigInt lib => 'GMP';
+
+        use Math::BigInt lib => 'GMP';
 
 can be heartily recommended.
 
 More information including HTMLified help and preliminary benchmark results
 are available under:
 
-	http://bloodgate.com/perl/bigint/
+        http://bloodgate.com/perl/bigint/
 
 Please send me test-reports, your experiences with this and your ideas - I love
 to hear about my work!

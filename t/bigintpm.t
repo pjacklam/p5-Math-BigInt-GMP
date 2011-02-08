@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 3619 + 6;
+use Test::More tests => 3569 + 6;
 
-use Math::BigInt lib => 'Calc';
+use Math::BigInt lib => 'GMP';
 
 use vars qw ($scale $class $try $x $y $f @args $ans $ans1 $ans1_str $setup $CL);
 $class = "Math::BigInt";
-$CL = "Math::BigInt::Calc";
+$CL = "Math::BigInt::GMP";
 
 #############################################################################
 # from_hex(), from_bin() and from_oct() tests
