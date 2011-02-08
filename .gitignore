@@ -13,3 +13,4 @@ Math-BigInt-*
 *.bs
 GMP.*
 !GMP.xs
+SIGNATURE
