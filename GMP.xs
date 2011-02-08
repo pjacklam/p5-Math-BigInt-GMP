@@ -546,27 +546,18 @@ _modinv(Class,x,y)
     EXTEND(SP, 2);	/* we return two values */
     if (rc == 0)
       {
-      /* inverse doesn't exist, return value undefined */
+      /* Inverse doesn't exist. Return both values undefined. */
       PUSHs ( &PL_sv_undef );
       PUSHs ( &PL_sv_undef );
       }
     else
       {
-      /* inverse exists, get sign */
-      sign = mpz_sgn (*RETVAL);
-      /* absolute result */
-      mpz_abs (*RETVAL, *RETVAL);
+      /* Inverse exists. When the modulus to mpz_invert() is positive,
+       * the returned value is also positive. */
       PUSHs(sv_2mortal(sv_from_mpz(RETVAL)));
-      if (sign >= 0)
-        {
-        PUSHs ( &PL_sv_undef );	/* result is ok, keep it */
-        }
-      else
-        {
 	s = sv_newmortal();
 	sv_setpvn (s, "+", 1);
-        PUSHs ( s );		/* result must be negated */
-        }
+      PUSHs ( s );
       }
 
 ##############################################################################

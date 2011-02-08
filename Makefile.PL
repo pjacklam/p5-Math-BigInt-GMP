@@ -50,7 +50,7 @@ WriteMakefile(
     'NAME'		=> 'Math::BigInt::GMP',
     'VERSION_FROM'	=> 'lib/Math/BigInt/GMP.pm',
     'PREREQ_PM'		=> {
-				Math::BigInt => 1.90,
+				Math::BigInt => 1.99_05,
 				XSLoader => 0.02,
 			   },
     'LIBS'		=> ['-lgmp'],

@@ -1,3 +1,14 @@
+2011-01-30 v1.33 pjacklam
+
+  * Fix _modinv() so that it works the same way as _modinv() in other
+    Math::BigInt libraries: The output arguments are an object and the
+    corresponding sign, not undef.
+  * Include most recent versions of the test files from the Math-BigInt
+    distribution (bigfltpm.inc, bigfltpm.t, bigintpm.inc, bigintpm.t,
+    biglog.t, and bigroot.t).
+  * Include generic SIGNATURE test file.
+  * Required version of Math::BigInt is now 1.99_05.
+
 2010-09-23 v1.32 rafl 5559 tests
   * Re-upload 1.31 as a stable release without further changes.
 

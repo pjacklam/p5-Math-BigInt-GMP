@@ -168,7 +168,7 @@ for my $m (qw/_len _alen/)
     _check_len($a,$m); 
     }
   }
- 
+
 # _digit
 $x = $C->_new("123456789");
 ok ($C->_digit($x,0),9);
@@ -249,12 +249,13 @@ ok ($C->_acmp($y,$x),1);
 ok ($C->_acmp($x,$x),0);
 ok ($C->_acmp($y,$y),0);
 
+
 # _modinv
 $x = $C->_new("8");
 $y = $C->_new("5033");
 my ($xmod,$sign) = $C->_modinv($x,$y);
-ok ($C->_str($xmod),'4404');		# -629 % 5033 == 4404
-ok (!defined $sign, 1);
+ok ($C->_str($xmod),'4404');		# (4404 * 8) % 5033 = 1
+ok ($sign, '+');
 
 # _div
 $x = $C->_new("3333"); $y = $C->_new("1111");

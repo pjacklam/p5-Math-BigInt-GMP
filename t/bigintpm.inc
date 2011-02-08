@@ -36,13 +36,13 @@ sub _swap
 ##############################################################################
 package main;
 
-my $CALC = $class->config()->{lib}; ok ($CALC,$CL);
+my $CALC = $class->config()->{lib}; is ($CALC,$CL);
 
 my ($f,$z,$a,$exp,@a,$m,$e,$round_mode,$expected_class);
 
 while (<DATA>) 
   {
-  chomp;
+  $_ =~ s/[\n\r]//g;	# remove newlines
   next if /^#/;	# skip comments
   if (s/^&//) 
     {
@@ -91,6 +91,8 @@ while (<DATA>)
     $try .= '"$m,$e";';
    }elsif ($f eq "bexp"){
     $try .= "\$x->bexp();";
+   } elsif ($f eq "bpi"){
+    $try .= "$class\->bpi(\$x);";
    } else {
     # binary ops
     $try .= "\$y = $class->new('$args[1]');";
@@ -174,12 +176,16 @@ while (<DATA>)
        $try .= "\$x->bmodinv(\$y);";
       }elsif ($f eq "digit"){
         $try .= "\$x->digit(\$y);";
+      }elsif ($f eq "batan2"){
+        $try .= "\$x->batan2(\$y);";
       } else {
+       # Functions with three arguments
        $try .= "\$z = $class->new(\"$args[2]\");";
 
-       # Functions with three arguments
        if( $f eq "bmodpow") {
          $try .= "\$x->bmodpow(\$y,\$z);";
+      } elsif ($f eq "bmuladd"){
+         $try .= "\$x->bmuladd(\$y,\$z);";
        } else { warn "Unknown op '$f'"; }
       }
     } # end else all other ops
@@ -192,13 +198,13 @@ while (<DATA>)
     }
   if ($ans eq "")
     {
-    ok_undef ($ans1); 
+      is ($ans1, undef); 
     }
   else
     {
     # print "try: $try ans: $ans1 $ans\n";
-    print "# Tried: '$try'\n" if !ok ($ans1, $ans);
-    ok (ref($ans),$expected_class) if $expected_class ne $class;
+    print "# Tried: '$try'\n" if !is ($ans1, $ans);
+    is (ref($ans),$expected_class) if $expected_class ne $class;
     }
   # check internal state of number objects
   is_valid($ans1,$f) if ref $ans1; 
@@ -211,18 +217,18 @@ for (my $i = 1; $i < 10; $i++)
   {
   push @a, $i;
   }
-ok "@a", "1 2 3 4 5 6 7 8 9";
+is("@a", "1 2 3 4 5 6 7 8 9");
 
 # test whether self-multiplication works correctly (result is 2**64)
 $try = "\$x = $class->new('4294967296');";
 $try .= '$a = $x->bmul($x);';
 $ans1 = eval $try;
-print "# Tried: '$try'\n" if !ok ($ans1, $class->new(2) ** 64);
+print "# Tried: '$try'\n" if !is ($ans1, $class->new(2) ** 64);
 # test self-pow
 $try = "\$x = $class->new(10);";
 $try .= '$a = $x->bpow($x);';
 $ans1 = eval $try;
-print "# Tried: '$try'\n" if !ok ($ans1, $class->new(10) ** 10);
+print "# Tried: '$try'\n" if !is ($ans1, $class->new(10) ** 10);
 
 ###############################################################################
 # test whether op destroys args or not (should better not)
@@ -230,61 +236,61 @@ print "# Tried: '$try'\n" if !ok ($ans1, $class->new(10) ** 10);
 $x = $class->new(3);
 $y = $class->new(4);
 $z = $x & $y;
-ok ($x,3);
-ok ($y,4);
-ok ($z,0);
+is ($x,3);
+is ($y,4);
+is ($z,0);
 $z = $x | $y;
-ok ($x,3);
-ok ($y,4);
-ok ($z,7);
+is ($x,3);
+is ($y,4);
+is ($z,7);
 $x = $class->new(1);
 $y = $class->new(2);
 $z = $x | $y;
-ok ($x,1);
-ok ($y,2);
-ok ($z,3);
+is ($x,1);
+is ($y,2);
+is ($z,3);
 
 $x = $class->new(5);
 $y = $class->new(4);
 $z = $x ^ $y;
-ok ($x,5);
-ok ($y,4);
-ok ($z,1);
+is ($x,5);
+is ($y,4);
+is ($z,1);
 
 $x = $class->new(-5); $y = -$x;
-ok ($x, -5);
+is ($x, -5);
 
 $x = $class->new(-5); $y = abs($x);
-ok ($x, -5);
+is ($x, -5);
 
 $x = $class->new(8);
 $y = $class->new(-1);
 $z = $class->new(5033);
 my $u = $x->copy()->bmodpow($y,$z);
-ok ($u,4404);
-ok ($y,-1);
-ok ($z,5033);
+is ($u,4404);
+is ($y,-1);
+is ($z,5033);
 
-$x = $class->new(-5); $y = -$x; ok ($x,-5); ok ($y,5);
-$x = $class->new(-5); $y = $x->copy()->bneg(); ok ($x,-5); ok ($y,5);
+$x = $class->new(-5); $y = -$x; is ($x,-5); is ($y,5);
+$x = $class->new(-5); $y = $x->copy()->bneg(); is ($x,-5); is ($y,5);
 
-$x = $class->new(-5); $y = $class->new(3); $x->bmul($y); ok ($x,-15); ok ($y,3);
-$x = $class->new(-5); $y = $class->new(3); $x->badd($y); ok ($x,-2); ok ($y,3);
-$x = $class->new(-5); $y = $class->new(3); $x->bsub($y); ok ($x,-8); ok ($y,3);
-$x = $class->new(-15); $y = $class->new(3); $x->bdiv($y); ok ($x,-5); ok ($y,3);
-$x = $class->new(-5); $y = $class->new(3); $x->bmod($y); ok ($x,1); ok ($y,3);
+$x = $class->new(-5); $y = $class->new(3); $x->bmul($y); is ($x,-15); is ($y,3);
+$x = $class->new(-5); $y = $class->new(3); $x->badd($y); is ($x,-2); is ($y,3);
+$x = $class->new(-5); $y = $class->new(3); $x->bsub($y); is ($x,-8); is ($y,3);
+$x = $class->new(-15); $y = $class->new(3); $x->bdiv($y); is ($x,-5); is ($y,3);
+$x = $class->new(-5); $y = $class->new(3); $x->bmod($y); is ($x,1); is ($y,3);
 
-$x = $class->new(5); $y = $class->new(3); $x->bmul($y); ok ($x,15); ok ($y,3);
-$x = $class->new(5); $y = $class->new(3); $x->badd($y); ok ($x,8); ok ($y,3);
-$x = $class->new(5); $y = $class->new(3); $x->bsub($y); ok ($x,2); ok ($y,3);
-$x = $class->new(15); $y = $class->new(3); $x->bdiv($y); ok ($x,5); ok ($y,3);
-$x = $class->new(5); $y = $class->new(3); $x->bmod($y); ok ($x,2); ok ($y,3);
+$x = $class->new(5); $y = $class->new(3); $x->bmul($y); is ($x,15); is ($y,3);
+$x = $class->new(5); $y = $class->new(3); $x->badd($y); is ($x,8); is ($y,3);
+$x = $class->new(5); $y = $class->new(3); $x->bsub($y); is ($x,2); is ($y,3);
+$x = $class->new(15); $y = $class->new(3); $x->bdiv($y); is ($x,5); is ($y,3);
+$x = $class->new(5); $y = $class->new(3); $x->bmod($y); is ($x,2); is ($y,3);
 
-$x = $class->new(5); $y = $class->new(-3); $x->bmul($y); ok ($x,-15); ok($y,-3);
-$x = $class->new(5); $y = $class->new(-3); $x->badd($y); ok ($x,2); ok($y,-3);
-$x = $class->new(5); $y = $class->new(-3); $x->bsub($y); ok ($x,8); ok($y,-3);
-$x = $class->new(15); $y = $class->new(-3); $x->bdiv($y); ok ($x,-5); ok($y,-3);
-$x = $class->new(5); $y = $class->new(-3); $x->bmod($y); ok ($x,-1); ok($y,-3);
+$x = $class->new(5); $y = $class->new(-3); $x->bmul($y); is ($x,-15); is ($y,-3);
+$x = $class->new(5); $y = $class->new(-3); $x->badd($y); is ($x,2); is ($y,-3);
+$x = $class->new(5); $y = $class->new(-3); $x->bsub($y); is ($x,8); is ($y,-3);
+$x = $class->new(15); $y = $class->new(-3); $x->bdiv($y); is ($x,-5); is ($y,-3);
+$x = $class->new(5); $y = $class->new(-3); $x->bmod($y); is ($x,-1); is ($y,-3);
 
 ###############################################################################
 # check whether overloading cmp works
@@ -292,7 +298,7 @@ $try = "\$x = $class->new(0);";
 $try .= "\$y = 10;";
 $try .= "'false' if \$x ne \$y;";
 $ans = eval $try;
-print "# For '$try'\n" if (!ok "$ans" , "false" ); 
+print "# For '$try'\n" if (!is ("$ans" , "false") );
 
 # we cant test for working cmpt with other objects here, we would need a dummy
 # object with stringify overload for this. see Math::String tests as example
@@ -350,113 +356,113 @@ print "# For '$try'\n" if (!ok "$ans" , "ok" );
 ###############################################################################
 # bool
 
-$x = $class->new(1); if ($x) { ok (1,1); } else { ok($x,'to be true') }
-$x = $class->new(0); if (!$x) { ok (1,1); } else { ok($x,'to be false') }
+$x = $class->new(1); if ($x) { is (1,1); } else { is ($x,'to be true') }
+$x = $class->new(0); if (!$x) { is (1,1); } else { is ($x,'to be false') }
 
 ###############################################################################
 # objectify()
 
 @args = Math::BigInt::objectify(2,4,5);
-ok (scalar @args,3);		# $class, 4, 5
-ok ($args[0] =~ /^Math::BigInt/);
-ok ($args[1],4);
-ok ($args[2],5);
+is (scalar @args,3);		# $class, 4, 5
+like ($args[0], qr/^Math::BigInt/);
+is ($args[1],4);
+is ($args[2],5);
 
 @args = Math::BigInt::objectify(0,4,5);
-ok (scalar @args,3);		# $class, 4, 5
-ok ($args[0] =~ /^Math::BigInt/);
-ok ($args[1],4);
-ok ($args[2],5);
+is (scalar @args,3);		# $class, 4, 5
+like ($args[0], qr/^Math::BigInt/);
+is ($args[1],4);
+is ($args[2],5);
 
 @args = Math::BigInt::objectify(2,4,5);
-ok (scalar @args,3);		# $class, 4, 5
-ok ($args[0] =~ /^Math::BigInt/);
-ok ($args[1],4);
-ok ($args[2],5);
+is (scalar @args,3);		# $class, 4, 5
+like ($args[0], qr/^Math::BigInt/);
+is ($args[1],4);
+is ($args[2],5);
 
 @args = Math::BigInt::objectify(2,4,5,6,7);
-ok (scalar @args,5);		# $class, 4, 5, 6, 7
-ok ($args[0] =~ /^Math::BigInt/);
-ok ($args[1],4); ok (ref($args[1]),$args[0]);
-ok ($args[2],5); ok (ref($args[2]),$args[0]);
-ok ($args[3],6); ok (ref($args[3]),'');
-ok ($args[4],7); ok (ref($args[4]),'');
+is (scalar @args,5);		# $class, 4, 5, 6, 7
+like ($args[0], qr/^Math::BigInt/);
+is ($args[1],4); is (ref($args[1]),$args[0]);
+is ($args[2],5); is (ref($args[2]),$args[0]);
+is ($args[3],6); is (ref($args[3]),'');
+is ($args[4],7); is (ref($args[4]),'');
 
 @args = Math::BigInt::objectify(2,$class,4,5,6,7);
-ok (scalar @args,5);		# $class, 4, 5, 6, 7
-ok ($args[0],$class);
-ok ($args[1],4); ok (ref($args[1]),$args[0]);
-ok ($args[2],5); ok (ref($args[2]),$args[0]);
-ok ($args[3],6); ok (ref($args[3]),'');
-ok ($args[4],7); ok (ref($args[4]),'');
+is (scalar @args,5);		# $class, 4, 5, 6, 7
+is ($args[0],$class);
+is ($args[1],4); is (ref($args[1]),$args[0]);
+is ($args[2],5); is (ref($args[2]),$args[0]);
+is ($args[3],6); is (ref($args[3]),'');
+is ($args[4],7); is (ref($args[4]),'');
 
 ###############################################################################
 # test whether an opp calls objectify properly or not (or at least does what
 # it should do given non-objects, w/ or w/o objectify())
 
-ok ($class->new(123)->badd(123),246);
-ok ($class->badd(123,321),444);
-ok ($class->badd(123,$class->new(321)),444);
+is ($class->new(123)->badd(123),246);
+is ($class->badd(123,321),444);
+is ($class->badd(123,$class->new(321)),444);
 
-ok ($class->new(123)->bsub(122),1);
-ok ($class->bsub(321,123),198);
-ok ($class->bsub(321,$class->new(123)),198);
+is ($class->new(123)->bsub(122),1);
+is ($class->bsub(321,123),198);
+is ($class->bsub(321,$class->new(123)),198);
 
-ok ($class->new(123)->bmul(123),15129);
-ok ($class->bmul(123,123),15129);
-ok ($class->bmul(123,$class->new(123)),15129);
+is ($class->new(123)->bmul(123),15129);
+is ($class->bmul(123,123),15129);
+is ($class->bmul(123,$class->new(123)),15129);
 
-ok ($class->new(15129)->bdiv(123),123);
-ok ($class->bdiv(15129,123),123);
-ok ($class->bdiv(15129,$class->new(123)),123);
+is ($class->new(15129)->bdiv(123),123);
+is ($class->bdiv(15129,123),123);
+is ($class->bdiv(15129,$class->new(123)),123);
 
-ok ($class->new(15131)->bmod(123),2);
-ok ($class->bmod(15131,123),2);
-ok ($class->bmod(15131,$class->new(123)),2);
+is ($class->new(15131)->bmod(123),2);
+is ($class->bmod(15131,123),2);
+is ($class->bmod(15131,$class->new(123)),2);
 
-ok ($class->new(2)->bpow(16),65536);
-ok ($class->bpow(2,16),65536);
-ok ($class->bpow(2,$class->new(16)),65536);
+is ($class->new(2)->bpow(16),65536);
+is ($class->bpow(2,16),65536);
+is ($class->bpow(2,$class->new(16)),65536);
 
-ok ($class->new(2**15)->brsft(1),2**14);
-ok ($class->brsft(2**15,1),2**14);
-ok ($class->brsft(2**15,$class->new(1)),2**14);
+is ($class->new(2**15)->brsft(1),2**14);
+is ($class->brsft(2**15,1),2**14);
+is ($class->brsft(2**15,$class->new(1)),2**14);
 
-ok ($class->new(2**13)->blsft(1),2**14);
-ok ($class->blsft(2**13,1),2**14);
-ok ($class->blsft(2**13,$class->new(1)),2**14);
+is ($class->new(2**13)->blsft(1),2**14);
+is ($class->blsft(2**13,1),2**14);
+is ($class->blsft(2**13,$class->new(1)),2**14);
 
 ###############################################################################
 # test for floating-point input (other tests in bnorm() below)
 
 $z = 1050000000000000;          # may be int on systems with 64bit?
-$x = $class->new($z); ok ($x->bsstr(),'105e+13');	# not 1.05e+15
+$x = $class->new($z); is ($x->bsstr(),'105e+13');	# not 1.05e+15
 $z = 1e+129;			# definitely a float (may fail on UTS)
 # don't compare to $z, since some Perl versions stringify $z into something
 # like '1.e+129' or something equally ugly
-$x = $class->new($z); ok ($x->bsstr(),'1e+129');
+$x = $class->new($z); is ($x->bsstr(),'1e+129');
 
 ###############################################################################
-# test for whitespace inlcuding newlines to be handled correctly
+# test for whitespace including newlines to be handled correctly
 
-# ok ($Math::BigInt::strict,1);		# the default
+# is ($Math::BigInt::strict,1);		# the default
 
 foreach my $c (
   qw/1 12 123 1234 12345 123456 1234567 12345678 123456789 1234567890/)
   {
   my $m = $class->new($c);
-  ok ($class->new("$c"),$m);
-  ok ($class->new(" $c"),$m);
-  ok ($class->new("$c "),$m);
-  ok ($class->new(" $c "),$m);
-  ok ($class->new("\n$c"),$m);
-  ok ($class->new("$c\n"),$m);
-  ok ($class->new("\n$c\n"),$m);
-  ok ($class->new(" \n$c\n"),$m);
-  ok ($class->new(" \n$c \n"),$m);
-  ok ($class->new(" \n$c\n "),$m);
-  ok ($class->new(" \n$c\n1"),'NaN');
-  ok ($class->new("1 \n$c\n1"),'NaN');
+  is ($class->new("$c"),$m);
+  is ($class->new(" $c"),$m);
+  is ($class->new("$c "),$m);
+  is ($class->new(" $c "),$m);
+  is ($class->new("\n$c"),$m);
+  is ($class->new("$c\n"),$m);
+  is ($class->new("\n$c\n"),$m);
+  is ($class->new(" \n$c\n"),$m);
+  is ($class->new(" \n$c \n"),$m);
+  is ($class->new(" \n$c\n "),$m);
+  is ($class->new(" \n$c\n1"),'NaN');
+  is ($class->new("1 \n$c\n1"),'NaN');
   }
 
 ###############################################################################
@@ -465,28 +471,28 @@ foreach my $c (
 
 # ((2^148)-1)/17
 $x = $class->new(2); $x **= 148; $x++; $x = $x / 17;
-ok ($x,"20988936657440586486151264256610222593863921");
-ok ($x->length(),length "20988936657440586486151264256610222593863921");
+is ($x,"20988936657440586486151264256610222593863921");
+is ($x->length(),length "20988936657440586486151264256610222593863921");
 
 # MM7 = 2^127-1
 $x = $class->new(2); $x **= 127; $x--;
-ok ($x,"170141183460469231731687303715884105727");
+is ($x,"170141183460469231731687303715884105727");
 
 $x = $class->new('215960156869840440586892398248');
 ($x,$y) = $x->length();
-ok ($x,30); ok ($y,0);
+is ($x,30); is ($y,0);
 
 $x = $class->new('1_000_000_000_000');
 ($x,$y) = $x->length();
-ok ($x,13); ok ($y,0);
+is ($x,13); is ($y,0);
 
 # test <<=, >>=
 $x = $class->new('2');
 my $y = $class->new('18');
-ok ($x <<= $y, 2 << 18);
-ok ($x, 2 << 18);
-ok ($x >>= $y, 2);
-ok ($x, 2);
+is ($x <<= $y, 2 << 18);
+is ($x, 2 << 18);
+is ($x >>= $y, 2);
+is ($x, 2);
 
 # I am afraid the following is not yet possible due to slowness
 # Also, testing for 2 meg output is a bit hard ;)
@@ -495,31 +501,31 @@ ok ($x, 2);
 # 593573509*2^332162+1 has exactly 1,000,000 digits
 # takes about 24 mins on 300 Mhz, so cannot be done yet ;)
 #$x = $class->new(2); $x **= 332162; $x *= "593573509"; $x++;
-#ok ($x->length(),1_000_000);
+#is ($x->length(),1_000_000);
 
 ###############################################################################
 # inheritance and overriding of _swap
 
 $x = Math::Foo->new(5);
 $x = $x - 8;		# 8 - 5 instead of 5-8
-ok ($x,3);
-ok (ref($x),'Math::Foo');
+is ($x,3);
+is (ref($x),'Math::Foo');
 
 $x = Math::Foo->new(5);
 $x = 8 - $x;		# 5 - 8 instead of 8 - 5
-ok ($x,-3);
-ok (ref($x),'Math::Foo');
+is ($x,-3);
+is (ref($x),'Math::Foo');
 
 ###############################################################################
 # Test whether +inf eq inf
 # This tried to test whether BigInt inf equals Perl inf. Unfortunately, Perl
 # hasn't (before 5.7.3 at least) a consistent way to say inf, and some things
 # like 1e100000 crash on some platforms. So simple test for the string 'inf'
-$x = $class->new('+inf'); ok ($x,'inf');
+$x = $class->new('+inf'); is ($x,'inf');
 
 ###############################################################################
 ###############################################################################
-# the followin tests only make sense with Math::BigInt::Calc or BareCalc or
+# the following tests only make sense with Math::BigInt::Calc or BareCalc or
 # FastCalc
 
 exit if $CALC !~ /^Math::BigInt::(|Bare|Fast)Calc$/; # for Pari et al.
@@ -533,51 +539,51 @@ my $MAX = $BASE;
 $BASE++;
 
 $x = $class->new($MAX); is_valid($x);	# f.i. 9999
-$x += 1; ok ($x,$BASE); is_valid($x); 	# 10000
-$x -= 1; ok ($x,$MAX); is_valid($x);	# 9999 again
+$x += 1; is ($x,$BASE); is_valid($x); 	# 10000
+$x -= 1; is ($x,$MAX); is_valid($x);	# 9999 again
 
 ###############################################################################
 # check numify
 
-$x = $class->new($BASE-1);     ok ($x->numify(),$BASE-1); 
-$x = $class->new(-($BASE-1));  ok ($x->numify(),-($BASE-1)); 
+$x = $class->new($BASE-1);     is ($x->numify(),$BASE-1); 
+$x = $class->new(-($BASE-1));  is ($x->numify(),-($BASE-1)); 
 
 # +0 is to protect from 1e15 vs 100000000 (stupid to_string aaaarglburblll...)
-$x = $class->new($BASE);       ok ($x->numify()+0,$BASE+0); 	
-$x = $class->new(-$BASE);      ok ($x->numify(),-$BASE);
+$x = $class->new($BASE);       is ($x->numify()+0,$BASE+0); 	
+$x = $class->new(-$BASE);      is ($x->numify(),-$BASE);
 $x = $class->new( -($BASE*$BASE*1+$BASE*1+1) ); 
-ok($x->numify(),-($BASE*$BASE*1+$BASE*1+1)); 
+is ($x->numify(),-($BASE*$BASE*1+$BASE*1+1));
 
 ###############################################################################
 # test bug in _digits with length($c[-1]) where $c[-1] was "00001" instead of 1
 
 $x = $class->new($BASE-2); $x++; $x++; $x++; $x++;
-if ($x > $BASE) { ok (1,1) } else { ok ("$x < $BASE","$x > $BASE"); }
+if ($x > $BASE) { is (1,1) } else { is ("$x < $BASE","$x > $BASE"); }
 
 $x = $class->new($BASE+3); $x++;
-if ($x > $BASE) { ok (1,1) } else { ok ("$x > $BASE","$x < $BASE"); }
+if ($x > $BASE) { is (1,1) } else { is ("$x > $BASE","$x < $BASE"); }
 
 # test for +0 instead of int(): 
-$x = $class->new($MAX); ok ($x->length(), length($MAX));
+$x = $class->new($MAX); is ($x->length(), length($MAX));
 
 ###############################################################################
 # test bug that $class->digit($string) did not work
 
-ok ($class->digit(123,2),1);
+is ($class->digit(123,2),1);
 
 ###############################################################################
 # bug in sub where number with at least 6 trailing zeros after any op failed
 
 $x = $class->new(123456); $z = $class->new(10000); $z *= 10; $x -= $z;
-ok ($z, 100000);
-ok ($x, 23456);
+is ($z, 100000);
+is ($x, 23456);
 
 ###############################################################################
 # bug in shortcut in mul()
 
 # construct a number with a zero-hole of BASE_LEN_SMALL
 {
- my @bl = $CL->_base_len(); my $bl = $bl[4];
+ my @bl = $CL->_base_len(); my $bl = $bl[5];
 
  $x = '1' x $bl . '0' x $bl . '1' x $bl . '0' x $bl;
  $y = '1' x (2*$bl);
@@ -589,7 +595,7 @@ ok ($x, 23456);
    $y .= $i; $d = $i.$d;
    }
  $y .= $bl x (3*$bl-1) . $d . '0' x $bl;
- ok ($x,$y);
+ is ($x,$y);
 
 
   #############################################################################
@@ -598,7 +604,7 @@ ok ($x, 23456);
   $x = '9' x $bl;
   $x = $class->new($x); 
   # 999 * 999 => 998 . 001, 9999*9999 => 9998 . 0001
-  ok ($x*$x, '9' x ($bl-1) . '8' . '0' x ($bl-1) . '1');
+  is ($x*$x, '9' x ($bl-1) . '8' . '0' x ($bl-1) . '1');
 }
 
 ###############################################################################
@@ -606,73 +612,61 @@ ok ($x, 23456);
 
 $x = $class->new('-322056000'); ($x,$y) = $x->bdiv('-12882240');
 
-ok ($y,'0'); is_valid($y);	# $y not '-0'
+is ($y,'0'); is_valid($y);	# $y not '-0'
 
 ###############################################################################
 # bug in $x->bmod($y)
 
 # if $x < 0 and $y > 0
-$x = $class->new('-629'); ok ($x->bmod(5033),4404);
+$x = $class->new('-629'); is ($x->bmod(5033),4404);
 
 ###############################################################################
 # bone/binf etc as plain calls (Lite failed them)
 
-ok ($class->bzero(),0);
-ok ($class->bone(),1);
-ok ($class->bone('+'),1);
-ok ($class->bone('-'),-1);
-ok ($class->bnan(),'NaN');
-ok ($class->binf(),'inf');
-ok ($class->binf('+'),'inf');
-ok ($class->binf('-'),'-inf');
-ok ($class->binf('-inf'),'-inf');
+is ($class->bzero(),0);
+is ($class->bone(),1);
+is ($class->bone('+'),1);
+is ($class->bone('-'),-1);
+is ($class->bnan(),'NaN');
+is ($class->binf(),'inf');
+is ($class->binf('+'),'inf');
+is ($class->binf('-'),'-inf');
+is ($class->binf('-inf'),'-inf');
 
 ###############################################################################
 # is_one('-')
 
-ok ($class->new(1)->is_one('-'),0);
-ok ($class->new(-1)->is_one('-'),1);
-ok ($class->new(1)->is_one(),1);
-ok ($class->new(-1)->is_one(),0);
+is ($class->new(1)->is_one('-'),0);
+is ($class->new(-1)->is_one('-'),1);
+is ($class->new(1)->is_one(),1);
+is ($class->new(-1)->is_one(),0);
 
 ###############################################################################
-# [perl #30609] bug with $x -= $x not beeing 0, but 2*$x
+# [perl #30609] bug with $x -= $x not being 0, but 2*$x
 
-$x = $class->new(3);  $x -= $x; ok ($x, 0);
-$x = $class->new(-3); $x -= $x; ok ($x, 0);
-$x = $class->new('NaN'); $x -= $x; ok ($x->is_nan(), 1);
-$x = $class->new('inf'); $x -= $x; ok ($x->is_nan(), 1);
-$x = $class->new('-inf'); $x -= $x; ok ($x->is_nan(), 1);
+$x = $class->new(3);  $x -= $x; is ($x, 0);
+$x = $class->new(-3); $x -= $x; is ($x, 0);
+$x = $class->new('NaN'); $x -= $x; is ($x->is_nan(), 1);
+$x = $class->new('inf'); $x -= $x; is ($x->is_nan(), 1);
+$x = $class->new('-inf'); $x -= $x; is ($x->is_nan(), 1);
 
-$x = $class->new('NaN'); $x += $x; ok ($x->is_nan(), 1);
-$x = $class->new('inf'); $x += $x; ok ($x->is_inf(), 1);
-$x = $class->new('-inf'); $x += $x; ok ($x->is_inf('-'), 1);
-$x = $class->new(3);  $x += $x; ok ($x, 6);
-$x = $class->new(-3); $x += $x; ok ($x, -6);
+$x = $class->new('NaN'); $x += $x; is ($x->is_nan(), 1);
+$x = $class->new('inf'); $x += $x; is ($x->is_inf(), 1);
+$x = $class->new('-inf'); $x += $x; is ($x->is_inf('-'), 1);
+$x = $class->new(3);  $x += $x; is ($x, 6);
+$x = $class->new(-3); $x += $x; is ($x, -6);
 
-$x = $class->new(3);  $x *= $x; ok ($x, 9);
-$x = $class->new(-3); $x *= $x; ok ($x, 9);
-$x = $class->new(3);  $x /= $x; ok ($x, 1);
-$x = $class->new(-3); $x /= $x; ok ($x, 1);
-$x = $class->new(3);  $x %= $x; ok ($x, 0);
-$x = $class->new(-3); $x %= $x; ok ($x, 0);
+$x = $class->new(3);  $x *= $x; is ($x, 9);
+$x = $class->new(-3); $x *= $x; is ($x, 9);
+$x = $class->new(3);  $x /= $x; is ($x, 1);
+$x = $class->new(-3); $x /= $x; is ($x, 1);
+$x = $class->new(3);  $x %= $x; is ($x, 0);
+$x = $class->new(-3); $x %= $x; is ($x, 0);
 
 ###############################################################################
 # all tests done
 
 1;
-
-###############################################################################
-###############################################################################
-# Perl 5.005 does not like ok ($x,undef)
-
-sub ok_undef
-  {
-  my $x = shift;
-
-  ok (1,1) and return if !defined $x;
-  ok ($x,'undef');
-  }
 
 ###############################################################################
 # sub to check validity of a BigInt internally, to ensure that no op leaves a
@@ -699,9 +693,9 @@ sub is_valid
     }
 
   # test done, see if error did crop up
-  ok (1,1), return if ($e eq '0');
+  is (1,1), return if ($e eq '0');
 
-  ok (1,$e." after op '$f'");
+  is (1,$e." after op '$f'");
   }
 
 __DATA__
@@ -981,11 +975,11 @@ E1:NaN
 E23:NaN
 1.23E1:NaN
 1.23E-1:NaN
-# bug with two E's in number beeing valid
+# bug with two E's in number being valid
 1e2e3:NaN
 1e2r:NaN
 1e2.0:NaN
-# bug with two '.' in number beeing valid
+# bug with two '.' in number being valid
 1.2.2:NaN
 1.2.3e1:NaN
 -1.2.3:NaN
@@ -1393,6 +1387,66 @@ abc:+0:NaN
 100000000001:-1:100000000002
 1000000000001:-1:1000000000002
 10000000000001:-1:10000000000002
+&bmuladd
+abc:abc:0:NaN
+abc:+0:0:NaN
++0:abc:0:NaN
++0:0:abc:NaN
+NaNmul:+inf:0:NaN
+NaNmul:-inf:0:NaN
+-inf:NaNmul:0:NaN
++inf:NaNmul:0:NaN
++inf:+inf:0:inf
++inf:-inf:0:-inf
+-inf:+inf:0:-inf
+-inf:-inf:0:inf
++0:+0:0:0
++0:+1:0:0
++1:+0:0:0
++0:-1:0:0
+-1:+0:0:0
+123456789123456789:0:0:0
+0:123456789123456789:0:0
+-1:-1:0:1
+-1:-1:0:1
+-1:+1:0:-1
++1:-1:0:-1
++1:+1:0:1
++2:+3:0:6
+-2:+3:0:-6
++2:-3:0:-6
+-2:-3:0:6
+111:111:0:12321
+10101:10101:0:102030201
+1001001:1001001:0:1002003002001
+100010001:100010001:0:10002000300020001
+10000100001:10000100001:0:100002000030000200001
+11111111111:9:0:99999999999
+22222222222:9:0:199999999998
+33333333333:9:0:299999999997
+44444444444:9:0:399999999996
+55555555555:9:0:499999999995
+66666666666:9:0:599999999994
+77777777777:9:0:699999999993
+88888888888:9:0:799999999992
+99999999999:9:0:899999999991
+11111111111:9:1:100000000000
+22222222222:9:1:199999999999
+33333333333:9:1:299999999998
+44444444444:9:1:399999999997
+55555555555:9:1:499999999996
+66666666666:9:1:599999999995
+77777777777:9:1:699999999994
+88888888888:9:1:799999999993
+99999999999:9:1:899999999992
+-3:-4:-5:7
+3:-4:-5:-17
+-3:4:-5:-17
+3:4:-5:7
+-3:4:5:-7
+3:-4:5:-7
+9999999999999999999:10000000000000000000:1234567890:99999999999999999990000000001234567890
+2:3:12345678901234567890:12345678901234567896
 &bmul
 abc:abc:NaN
 abc:+0:NaN
@@ -1487,7 +1541,7 @@ inf:inf:NaN,NaN
 inf:-inf:NaN,NaN
 8:0:inf,8
 inf:0:inf,inf
-# exceptions to reminder rule
+# exceptions to remainder rule
 -8:0:-inf,-8
 -inf:0:-inf,-inf
 0:0:NaN,NaN
@@ -1618,7 +1672,7 @@ inf:0:inf
 84696969696969696943434343434871161616161616161452525252486813131313131313143230042929292929292930:13131313131313131313131313131394949494949494949494949494943535353535353535353535:6449999999999999998
 84696969696969696969696969697497424242424242424242424242385803030303030303030300750000000000000000:13131313131313131313131313131394949494949494949494949494943535353535353535353535:6450000000000000000
 84696969696969696930303030303558030303030303030057575757537318181818181818199694689393939393939395:13131313131313131313131313131394949494949494949494949494943535353535353535353535:6449999999999999997
-# excercise shortcut for numbers of the same length in div
+# exercise shortcut for numbers of the same length in div
 999999999999999999999999999999999:999999999999999999999999999999999:1
 999999999999999999999999999999999:888888888888888888888888888888888:1
 999999999999999999999999999999999:777777777777777777777777777777777:1
@@ -1650,13 +1704,34 @@ abc:5:NaN
 # bmodinv Expected Results from normal use
 1:5:1
 3:5:2
+3:-5:-3
 -2:5:2
 8:5033:4404
 1234567891:13:6
 -1234567891:13:7
 324958749843759385732954874325984357439658735983745:2348249874968739:1741662881064902
+-2:1:0
+-1:1:0
+0:1:0
+1:1:0
+2:1:0
+3:1:0
+4:1:0
+-2:3:1
+-1:3:2
+0:3:NaN
+1:3:1
+2:3:2
+3:3:NaN
+4:3:1
+-2:4:NaN
+-1:4:3
+0:4:NaN
+1:4:1
+2:4:NaN
+3:4:3
+4:4:NaN
 ## bmodinv Error cases / useless use of function
-3:-5:NaN
 inf:5:NaN
 5:inf:NaN
 -inf:5:NaN
@@ -1671,16 +1746,165 @@ abc:abc:5:NaN
 5:5:abc:NaN
 5:abc:5:NaN
 abc:5:5:NaN
+3:5:0:NaN
 # bmodpow Expected results
 0:0:2:1
 1:0:2:1
+0:3:5:0
+-2:-2:1:0
+-1:-2:1:0
+0:-2:1:0
+1:-2:1:0
+2:-2:1:0
+3:-2:1:0
+4:-2:1:0
+-2:-1:1:0
+-1:-1:1:0
+0:-1:1:0
+1:-1:1:0
+2:-1:1:0
+3:-1:1:0
+4:-1:1:0
+-2:0:1:0
+-1:0:1:0
 0:0:1:0
-8:7:5032:3840
+1:0:1:0
+2:0:1:0
+3:0:1:0
+4:0:1:0
+-2:1:1:0
+-1:1:1:0
+0:1:1:0
+1:1:1:0
+2:1:1:0
+3:1:1:0
+4:1:1:0
+-2:2:1:0
+-1:2:1:0
+0:2:1:0
+1:2:1:0
+2:2:1:0
+3:2:1:0
+4:2:1:0
+-2:3:1:0
+-1:3:1:0
+0:3:1:0
+1:3:1:0
+2:3:1:0
+3:3:1:0
+4:3:1:0
+-2:4:1:0
+-1:4:1:0
+0:4:1:0
+1:4:1:0
+2:4:1:0
+3:4:1:0
+4:4:1:0
+-2:-2:3:1
+-1:-2:3:1
+0:-2:3:NaN
+1:-2:3:1
+2:-2:3:1
+3:-2:3:NaN
+4:-2:3:1
+-2:-1:3:1
+-1:-1:3:2
+0:-1:3:NaN
+1:-1:3:1
+2:-1:3:2
+3:-1:3:NaN
+4:-1:3:1
+-2:0:3:1
+-1:0:3:1
+0:0:3:1
+1:0:3:1
+2:0:3:1
+3:0:3:1
+4:0:3:1
+-2:1:3:1
+-1:1:3:2
+0:1:3:0
+1:1:3:1
+2:1:3:2
+3:1:3:0
+4:1:3:1
+-2:2:3:1
+-1:2:3:1
+0:2:3:0
+1:2:3:1
+2:2:3:1
+3:2:3:0
+4:2:3:1
+-2:3:3:1
+-1:3:3:2
+0:3:3:0
+1:3:3:1
+2:3:3:2
+3:3:3:0
+4:3:3:1
+-2:4:3:1
+-1:4:3:1
+0:4:3:0
+1:4:3:1
+2:4:3:1
+3:4:3:0
+4:4:3:1
+-2:-2:4:NaN
+-1:-2:4:1
+0:-2:4:NaN
+1:-2:4:1
+2:-2:4:NaN
+3:-2:4:1
+4:-2:4:NaN
+-2:-1:4:NaN
+-1:-1:4:3
+0:-1:4:NaN
+1:-1:4:1
+2:-1:4:NaN
+3:-1:4:3
+4:-1:4:NaN
+-2:0:4:1
+-1:0:4:1
+0:0:4:1
+1:0:4:1
+2:0:4:1
+3:0:4:1
+4:0:4:1
+-2:1:4:2
+-1:1:4:3
+0:1:4:0
+1:1:4:1
+2:1:4:2
+3:1:4:3
+4:1:4:0
+-2:2:4:0
+-1:2:4:1
+0:2:4:0
+1:2:4:1
+2:2:4:0
+3:2:4:1
+4:2:4:0
+-2:3:4:0
+-1:3:4:3
+0:3:4:0
+1:3:4:1
+2:3:4:0
+3:3:4:3
+4:3:4:0
+-2:4:4:0
+-1:4:4:1
+0:4:4:0
+1:4:4:1
+2:4:4:0
+3:4:4:1
+4:4:4:0
+8:-1:16:NaN
 8:-1:5033:4404
+8:7:5032:3840
+8:8:-5:-4
+1e50:1:1:0
 98436739867439843769485798542749827593285729587325:43698764986460981048259837659386739857456983759328457:6943857329857295827698367:3104744730915914415259518
 # bmodpow Error cases
-8:8:-5:NaN
-8:-1:16:NaN
 inf:5:13:NaN
 5:inf:13:NaN
 &bmod
@@ -1703,7 +1927,7 @@ inf:inf:NaN
 inf:-inf:NaN
 8:0:8
 inf:0:inf
-# exceptions to reminder rule
+# exceptions to remainder rule
 -inf:0:-inf
 -8:0:-8
 0:0:NaN
@@ -2232,6 +2456,40 @@ NaN:NaN
 inf:inf
 1:2
 2:7
+&batan2
+NaN:1:10:NaN
+NaN:NaN:10:NaN
+1:NaN:10:NaN
+inf:1:14:1
+-inf:1:14:-1
+0:-inf:14:3
+-1:-inf:14:-3
+1:-inf:14:3
+0:inf:14:0
+inf:-inf:14:2
+-inf:-inf:14:-2
+# +- 0.78....
+inf:+inf:14:0
+-inf:+inf:14:0
+1:5:13:0
+1:5:14:0
+0:0:10:0
+0:1:14:0
+0:2:14:0
+1:0:14:1
+5:0:14:1
+-1:0:11:-1
+-2:0:77:-1
+2:0:77:1
+-1:5:14:0
+1:5:14:0
+-1:8:14:0
+1:8:14:0
+-1:1:14:0
+&bpi
+77:3
++0:3
+11:3
 # see t/bignok.t for more tests
 &bnok
 +inf:10:inf
