@@ -9,7 +9,7 @@ use 5.006002;
 
 use vars qw/$VERSION/;
 
-$VERSION = '1.35';
+$VERSION = '1.36';
 
 use XSLoader;
 XSLoader::load "Math::BigInt::GMP", $VERSION;
@@ -42,47 +42,63 @@ sub _num {
 # Math::BigInt::Calc.
 
 sub _nok {
+    # Return binomial coefficient (n over k).
+    # Given refs to arrays, return ref to array.
+    # First input argument is modified.
+
     my ($c, $n, $k) = @_;
 
     # If k > n/2, or, equivalently, 2*k > n, compute nok(n, k) as
     # nok(n, n-k), to minimize the number if iterations in the loop.
 
-    my $two  = _two($c);
-
     {
-        my $twok = _copy($c, $k);               # twok = k
-        _mul($c, $twok, $two);                  #          * 2
-
-        if (_acmp($c, $twok, $n) > 0) {         # if 2*k > n
-            $k = _sub($c, _copy($c, $n), $k);   # k = n - k
+        my $twok = _mul($c, _two($c), _copy($c, $k));   # 2 * k
+        if (_acmp($c, $twok, $n) > 0) {                 # if 2*k > n
+            $k = _sub($c, _copy($c, $n), $k);           # k = n - k
         }
     }
 
+    # Example:
+    #
+    # / 7 \       7!       1*2*3*4 * 5*6*7   5 * 6 * 7       6   7
+    # |   | = --------- =  --------------- = --------- = 5 * - * -
+    # \ 3 /   (7-3)! 3!    1*2*3*4 * 1*2*3   1 * 2 * 3       2   3
+
     if (_is_zero($c, $k)) {
-        return _one($c);
+        $n = _one($c);
+        return $n;
     }
 
-    # Initialize output.
+    # Make a copy of the original n, since we'll be modifing n in-place.
 
-    my $nok = _copy($c, $n);                    # nok = n
-    _sub($c, $nok, $k);                         #         - k
-    _inc($c, $nok);                             #         + 1
+    my $n_orig = _copy($c, $n);
 
-    # Initialize factors.
+    # n = 5, f = 6, d = 2 (cf. example above)
 
-    my $f = _copy($c, $nok);                    # f = n - k + 1
-    _inc($c, $f);                               #       + 1
+    _sub($c, $n, $k);
+    _inc($c, $n);
 
-    my $d = $two;
+    my $f = _copy($c, $n);
+    _inc($c, $f);
 
-    while (_acmp($c, $f, $n) <= 0) {
-        _mul($c, $nok, $f);                     # nok = nok * f
-        _div($c, $nok, $d);                     # nok = nok / d
-        _inc($c, $f);                           # f = f + 1
-        _inc($c, $d);                           # d = d + 1
+    my $d = _two($c);
+
+    # while f <= n (the original n, that is) ...
+
+    while (_acmp($c, $f, $n_orig) <= 0) {
+
+        # n = (n * f / d) == 5 * 6 / 2 (cf. example above)
+
+        _mul($c, $n, $f);
+        _div($c, $n, $d);
+
+        # f = 7, d = 3 (cf. example above)
+
+        _inc($c, $f);
+        _inc($c, $d);
     }
 
-    return $nok;
+    return $n;
 }
 
 ###############################################################################

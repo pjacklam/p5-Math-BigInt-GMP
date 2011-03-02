@@ -1,4 +1,12 @@
-2011-02-08 v1.35 pjacklam ( tests)
+Revision history for Perl extension Math::BigInt::GMP.
+
+2011-02-26 v1.36 pjacklam (6362 tests)
+  * Change bigintpm.inc to reflect recent changes in the Math::BigInt
+    distribution (Peter John Acklam).
+  * Use a _nok() function more similar to the one in Math::BigInt::Calc
+    (Peter John Acklam).
+
+2011-02-08 v1.35 pjacklam (6361 tests)
   * Rename files for testing signature, module loading, and POD so the names
     are within the 8+3 character limit (Peter John Acklam).
   * Rename method _nok_ok() to the correct _nok(). There ought to have been a
