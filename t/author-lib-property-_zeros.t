@@ -107,4 +107,3 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
                "output arg has the right value");
     };
 }
-

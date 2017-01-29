@@ -101,4 +101,3 @@ my $out0 = '10';
            "'$test' output arg has the right value");
     };
 }
-

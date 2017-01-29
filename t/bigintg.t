@@ -1,6 +1,8 @@
-#!/usr/bin/perl -w
+#!perl
 
 use strict;
+use warnings;
+
 use Test::More tests => 356;;
 
 use Math::BigInt::GMP;

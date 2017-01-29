@@ -123,4 +123,3 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
            "'$test' output arg is an integer");
     };
 }
-

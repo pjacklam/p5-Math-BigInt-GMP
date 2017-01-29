@@ -84,4 +84,3 @@ can_ok($LIB, 'api_version');
              "'$test' output is a decimal number'");
     };
 }
-

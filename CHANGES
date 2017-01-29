@@ -1,6 +1,11 @@
 Revision history for Perl extension Math::BigInt::GMP.
 
-2016-11-15 v1.600 pjacklam
+2016-11-23 v1.6001 pjacklam
+  * Sync test files with Math-BigInt-1.999801.
+
+  * Correct version number in CHANGES file.
+
+2016-11-15 v1.6000 pjacklam
   * Sync test files with Math-BigInt-1.999800.
 
   * Update bundled Devel::CheckLib from v1.03 to v1.07.

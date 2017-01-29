@@ -11,7 +11,7 @@ BEGIN {
 use strict;
 use warnings;
 
-use Test::More tests => 3605;
+use Test::More tests => 20205;
 
 ###############################################################################
 # Read and load configuration file and backend library.
@@ -47,23 +47,15 @@ die $@ if $@;
 
 ###############################################################################
 
+can_ok($LIB, '_lcm');
+
 my $scalar_util_ok = eval { require Scalar::Util; };
 Scalar::Util -> import('refaddr') if $scalar_util_ok;
 
 diag "Skipping some tests since Scalar::Util is not installed."
   unless $scalar_util_ok;
 
-can_ok($LIB, '_sub');
-
 my @data;
-
-# Small numbers.
-
-for (my $x = 0; $x <= 24 ; ++ $x) {
-    for (my $y = 0; $y <= $x ; ++ $y) {
-        push @data, [ $x, $y, $x - $y ];
-    }
-}
 
 # Add data in data file.
 
@@ -85,15 +77,15 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
 
     my $test = qq|\$x = $LIB->_new("$in0"); |
              . qq|\$y = $LIB->_new("$in1"); |
-             . qq|\@got = $LIB->_sub(\$x, \$y);|;
+             . qq|\@got = $LIB->_lcm(\$x, \$y);|;
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
-    subtest "_sub() in list context: $test", sub {
+    subtest "_lcm() in list context: $test", sub {
         plan tests => $scalar_util_ok ? 9 : 8;
 
-        cmp_ok(scalar @got, '==', 1,
+        cmp_ok(scalar @got, "==", 1,
                "'$test' gives one output arg");
 
         is(ref($got[0]), $REF,
@@ -112,14 +104,17 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
         is(ref($x), $REF,
            "'$test' first input arg is still a $REF");
 
-        ok($LIB->_str($x) eq $out0 || $LIB->_str($x) eq $in0,
-           "'$test' first input arg has the correct value");
+        my $strx = $LIB->_str($x);
+        ok($strx eq $out0 || $strx eq $in0,
+           "'$test' first input arg has the right value")
+          or diag("       got: $strx\n", "  expected: ",
+                  $out0 eq $in0 ? $out0 : "$out0 or $in0");
 
         is(ref($y), $REF,
            "'$test' second input arg is still a $REF");
 
         is($LIB->_str($y), $in1,
-           "'$test' second output arg is unmodified");
+           "'$test' second input arg is unmodified");
     };
 }
 
@@ -128,16 +123,18 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
 for (my $i = 0 ; $i <= $#data ; ++ $i) {
     my ($in0, $in1, $out0) = @{ $data[$i] };
 
-    my ($x, $y, $got);
+    my ($got);
+    my ($x, $y);
+    my ($xo, $yo);
 
     my $test = qq|\$x = $LIB->_new("$in0"); |
              . qq|\$y = $LIB->_new("$in1"); |
-             . qq|\$got = $LIB->_sub(\$x, \$y);|;
+             . qq|\$got = $LIB->_lcm(\$x, \$y);|;
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
-    subtest "_sub() in scalar context: $test", sub {
+    subtest "_lcm() in scalar context: $test", sub {
         plan tests => $scalar_util_ok ? 8 : 7;
 
         is(ref($got), $REF,
@@ -156,13 +153,16 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
         is(ref($x), $REF,
            "'$test' first input arg is still a $REF");
 
-        ok($LIB->_str($x) eq $out0 || $LIB->_str($x) eq $in0,
-           "'$test' first input arg has the correct value");
+        my $strx = $LIB->_str($x);
+        ok($strx eq $out0 || $strx eq $in0,
+           "'$test' first input arg has the right value")
+          or diag("       got: $strx\n", "  expected: ",
+                  $out0 eq $in0 ? $out0 : "$out0 or $in0");
 
         is(ref($y), $REF,
            "'$test' second input arg is still a $REF");
 
         is($LIB->_str($y), $in1,
-           "'$test' second output arg is unmodified");
+           "'$test' second input arg is unmodified");
     };
 }
