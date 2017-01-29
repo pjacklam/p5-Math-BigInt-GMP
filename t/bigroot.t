@@ -9,10 +9,12 @@
 # it at all.
 
 use strict;
-use Test::More tests => 4 * 2;
+use Test::More tests => 1 + 4 * 2;
 
-use Math::BigFloat;
+use Math::BigFloat only => 'GMP';
 use Math::BigInt;
+
+is (Math::BigInt->config()->{lib}, 'Math::BigInt::GMP', 'GMP loaded');
 
 my $cl = "Math::BigFloat";
 my $c = "Math::BigInt";

@@ -12,12 +12,14 @@
 # versions up to v1.63, and for bsqrt($x) when $x << 1 for instance).
 
 use strict;
-use Test::More tests => 70;
+use Test::More tests => 71;
 
-use Math::BigFloat;
+use Math::BigFloat only => 'GMP';
 use Math::BigInt;
 
 my $cl = "Math::BigInt";
+
+is (Math::BigInt->config()->{lib}, 'Math::BigInt::GMP', 'GMP loaded');
 
 #############################################################################
 # test log($n) in BigInt (broken until 1.80)

@@ -9,6 +9,15 @@ BEGIN {
     use_ok('Math::BigInt');         # Math::BigInt is required for the tests
 };
 
-diag("Testing Math::BigInt::GMP $Math::BigInt::GMP::VERSION");
-diag("==> Perl $], $^X");
-diag("==> Math::BigInt $Math::BigInt::VERSION");
+my @mods = ('Math::BigInt::GMP',
+            'Math::BigInt');
+
+diag("");
+diag("Testing with Perl $], $^X");
+diag("");
+diag(sprintf("%12s %s\n", 'Version', 'Module'));
+diag(sprintf("%12s %s\n", '-------', '------'));
+for my $mod (@mods) {
+    diag(sprintf("%12s %s\n", $mod -> VERSION, $mod));
+}
+diag("");

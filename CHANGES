@@ -1,8 +1,34 @@
 Revision history for Perl extension Math::BigInt::GMP.
 
+2015-08-18 v1.40 pjacklam
+ CHANGES
+  * Add changes for the newest release.
+  * Reorder change entries into descending chronological order.
+ lib/Devel/CheckLib.pm
+  * Update bundled Devel::CheckLib from v1.01 to v1.03.
+ Makefile.PL
+  * Update required version of Math-BigInt to 1.9994.
+ t/01load.t
+  * Improve formatting of module version information.
+ t/bigfltpm.t
+  * Use the correct backend, in this case Math::BigInt::GMP.
+  * Skip test specific for the Math::BigInt::Calc backend.
+ t/bigintpm.inc
+  * Rather than an early exit(), use skip() to skip tests.
+ t/bigintpm.t
+  * Use the correct backend, in this case Math::BigInt::GMP.
+ t/biglog.t
+  * Use the correct backend, in this case Math::BigInt::GMP. This was correct
+    in v1.21, but has been wrong since then.
+ t/bigroot.t
+  * Use the correct backend, in this case Math::BigInt::GMP. This was correct
+    up until v1.32, but has been wrong since then.
+ lib/Math/BigInt/GMP.pm
+  * Increment Math::BigInt::GMP version number to 1.40.
+
 2015-08-17 v1.39 pjacklam
  * Updated test files with those from Math-BigInt-1.9997.
- 
+
 2014-04-03 v1.38 pjacklam
  * Updated test files from the Math::BigInt distribution (Peter John Acklam).
  * Updated POD (Peter John Acklam)
@@ -101,9 +127,10 @@ Revision history for Perl extension Math::BigInt::GMP.
  * Fix tests with Math::BigInt >= 1.90 and depend on it.
 
 2007-07-31 v1.24 Tels 5530 tests
- * apply patch for warnings about ptr size mismatch under Cygwin (thanx Reini Urban!)
- * make it work under 5.6.x again by defining SvUOK() (Thanx Marcus Holland-Moritz
-   and Reini Urban!)
+ * apply patch for warnings about ptr size mismatch under Cygwin (thanx
+   Reini Urban!)
+ * make it work under 5.6.x again by defining SvUOK() (Thanx Marcus
+   Holland-Moritz and Reini Urban!)
 
 2007-07-25 v1.23 Tels 5527 tests
  * require Math::BigInt 1.87
@@ -165,19 +192,138 @@ Using Math::BigInt::GMP v1.22
  * add support for octal
  * take over tests from MBI 1.78 and require it
 
-Older Changelog:
+2005-04-11 v1.18 Tels 5186 tests
+ * _log_int() handles now plain scalars as $base parameter
+ * take over tests from MBI 1.76, require it
 
-2001-07-22 v1.00 Tels
- * First version (basically working with some quirks)
+2005-01-01 v1.17 Tels 5182 tests
+ * use XSLoader instead of DynaLoader to save a tiny amount of memory
+ * take over tests from Math::BigInt v1.74
+ * require Math::BigInt v1.74
+ * simplify sub code in XS (left-over artifact from v1.16)
+ * fix a leak in _zeros()
+ * _zeros() is now much faster for odd numbers (O(1) vs. O(N*N))
 
-2001-08-06 v1.01 Tels
-* first release
-* fixed all the bugs in v1.00
-* taken over tests from BigInt v1.40
+2004-12-09 v1.16 Tels 5112 tests
+ * fixed a leak in _div() (Thanx Tassilo v. Parsival!)
+ * put _div() into XS, making division slightly faster for small numbers
+ * put leak.pl and leaktest into MANIFEST for later checking
 
-2001-09-02 v1.02 Tels
-* removed auto-export and added empty import()
-* taken over tests from BigInt v1.42
+2004-11-22 v1.15 Tels 5112 tests
+ * some small cleanups in the Perl code
+ * changed "class" to "Class" to avoid the reserved keyword for MS compiler
+ * do not pull unused parameter "Class" from stack - avoid compiler warnings
+ * put _sub() into XS for more speed and smaller memory footprint
+ * testsuite from MBI v1.73
+
+2004-02-15 v1.14 Tels 4867 tests
+ * require BigInt v1.70, use tests from it and make API compatible with it
+ * _rsft() and _lsft() modify their argument instead of making a copy,
+   meaning brsft() and blsft() got about 20% faster in BigInt
+ * added a working _zeros() method
+ * added a working _log_int() method
+
+2004-01-10 v1.13 Tels 4759 tests
+ * tests from BigInt v1.68
+ * removed DESTROY from GMP.pm and made GMP.xs destroy => DESTROY
+ * removed _num from GMP.pm and made GMP.xs __stringify => _num
+ * removed _modinv() from GMP.pm and fixed up _modinv in GMP.xs
+ * disabled the borken _log_int() from the XS code
+ * modify $x in place for _dec, _inc, _add, _mod, _mul, _fac, _and, _or,
+   _xor, _sqrt, _root and _sub (sub in non-reversed form), this removes some
+   malloc/free and makes these ops slightly faster
+   (between 10 and 33% in Math::BigInt (!), depending on input and size)
+
+2003-12-11 v1.12 Tels 4677 tests
+ * testsuite from v1.67, especialy revamped bigintg.t
+ * fixed prereq to require BigInt v1.67
+ * added _log_int() to XS code
+ * some routines did only return the result, but not modify $x in place
+
+2003-07-04 v1.12b Tels 4491 tests (not released)
+ * testsuite from v1.65
+ * fixed prereq to require BigInt v1.65
+
+2003-01-08 v1.12a Tels 4109 tests (not released)
+ * removed unused function _mmod from XS code
+ * removed unnecc. if len == 0 check in _as_bin(), _as_hex() etc
+ * replace some RETVAL = malloc() lines with defined to make changing them
+   later much easier
+
+2003-01-01 v1.11 Tels 4109 tests
+ * rewrote stringify_bin() and stringify_hex() to not allocate scratch buffers
+   Faster, no longer needs malloc()/free() and strlen().
+   Thanx to Sysiphus for pointing this out.
+ * removed _as_hex() and _as_bin() from GMP.pm and moved the logic to GMP.xs
+ * documented in todo to replace all malloc()/free() with New and Safefree()
+ * removed unused cmp_two() function in GMP.xs
+ * removed the unused "$zero = ..."/"$one = ..." in GMP.pm
+
+2002-12-24 v1.10 Tels 4109 tests
+ * Merry Christmas and a Happy New Year to all!
+ * cut out more dead wood from GMP.xs, GMP.so file shrunk a bit
+ * added some comments in GMP.xs
+ * fixed PREREQ to BigInt v1.64 since v1.65 is not yet out *sigh*
+ * more functions like _is_odd()/_is_even()/_acmp() directly in XS - cut away
+   perl layer subroutines for more speed (about 10-30% more ops/s for small
+   argument or constant cases or other cases where the overhead is greater
+   than the actual math operation itself)
+ * __stringify() no longer malloc()s a temp. storage => faster
+ * added _root(), _lsft() and_rsft() functions for great speedups
+ * Running the benchmark script above (adopted a bit) on the same 1 Ghz AMD
+   under BigInt v1.64:
+   Benchmark: running div_l, mod_l, mod_s for at least 3 CPU seconds...
+     div_l:  3s ( 3.20 usr +  0.00 sys =  3.20 CPU) @ 4655.00/s (n=14896)
+     mod_l:  4s ( 3.31 usr +  0.00 sys =  3.31 CPU) @ 6851.96/s (n=22680)
+     mod_s:  3s ( 3.01 usr +  0.00 sys =  3.01 CPU) @ 7088.37/s (n=21336)
+ * Full (memory and other) benchmarks at http://bloodgate.com/perl/bigint/
+
+2002-12-15 v1.10a Tels Never released
+ * no longer needs Math::GMP (and Carp), but uses own XS layer
+ * is thus faster (saves one perl subroutine layer) and less memory hungry
+   (it now uses even less memory than using Calc!)
+   new XS lets us cut out a subroutine layer
+ * new XS will enable us to implement *all* missing functions like _root(),
+   _as_hex(), _as_bin() and _rsft(), _lsft()
+ * fixed PREREQ to BigInt v1.65
+ * extended tests in bigintg.t to cover more functions
+
+2002-12-12 v1.08 Tels 4069 tests (never released)
+ * added implementation of bmodpow() using GMPs mpow_gmp()
+ * release signed by key http://bloodgate.com/tels.asc id 93B84C15
+
+2002-07-07 v1.07 Tels
+ * testsuite from BigInt v1.60 - 4054 tests
+ * fixed PREREQUISITES to BigInt v1.60
+
+2002-03-23 v1.06 Tels
+ * testsuite from v1.55 - 3874 tests
+ * fixed PREREQUISITES to Math::GMP v2.03, BigInt v1.55
+ * fixed typos in CHANGES
+ * added _from_bin()
+
+2002-02-16 v1.05 Tels
+ * tests from Math::BigInt v1.51
+ * replaced _core_lib() by config()->{lib}
+ * added _and, _or, _xor (using Math::GMP internal methods)
+ * switched _fac over to use Math::GMP gmp_fac()
+ * added _sqrt() using gmp_sqrt()
+ * used div_two and bdiv_two for _div()
+ * tests for _div() in list context and _mod
+ * added _from_hex()
+
+ The speedups in band(), bxor(), bior() and bfac() are at least factor 10 for
+ small numbers and quickly raise as the numbers grow ;)
+ The speedup for bmod() and bdiv() aren't that dramatic, but still worth it.
+
+2002-01-26 v1.04 Tels
+ * use $zero,$one,$two etc instead of 0,1,2 in some routines
+ * tests from Math::BigInt v1.50
+ * bypass Math::GMP's overload interface and use Math::GMP::gmp_foo() directly
+ * added _gcd() and _fac() for more speed in bgcd() and bfac(), respectively
+
+2001-11-01 v1.04a Tels (never released)
+ * _is_odd()/_is_even() use $two instead of 2: 5600 op/s instead of 4700
 
 2001-11-01 v1.03 Tels
 * taken over tests from BigInt v1.45
@@ -205,138 +351,17 @@ Older Changelog:
        mod_l    1111    2325
        div_l    1260    1300
 
-2001-11-01 v1.04a Tels (never released)
- * _is_odd()/_is_even() use $two instead of 2: 5600 op/s instead of 4700
+2001-09-02 v1.02 Tels
+* removed auto-export and added empty import()
+* taken over tests from BigInt v1.42
 
-2002-01-26 v1.04 Tels
- * use $zero,$one,$two etc instead of 0,1,2 in some routines
- * tests from Math::BigInt v1.50
- * bypass Math::GMP's overload interface and use Math::GMP::gmp_foo() directly
- * added _gcd() and _fac() for more speed in bgcd() and bfac(), respectively
+2001-08-06 v1.01 Tels
+* first release
+* fixed all the bugs in v1.00
+* taken over tests from BigInt v1.40
 
-2002-02-16 v1.05 Tels
- * tests from Math::BigInt v1.51
- * replaced _core_lib() by config()->{lib}
- * added _and, _or, _xor (using Math::GMP internal methods)
- * switched _fac over to use Math::GMP gmp_fac()
- * added _sqrt() using gmp_sqrt()
- * used div_two and bdiv_two for _div()
- * tests for _div() in list context and _mod
- * added _from_hex()
-
- The speedups in band(), bxor(), bior() and bfac() are at least factor 10 for
- small numbers and quickly raise as the numbers grow ;)
- The speedup for bmod() and bdiv() aren't that dramatic, but still worth it.
-
-2002-03-23 v1.06 Tels
- * testsuite from v1.55 - 3874 tests
- * fixed PREREQUISITES to Math::GMP v2.03, BigInt v1.55
- * fixed typos in CHANGES
- * added _from_bin()
-
-2002-07-07 v1.07 Tels
- * testsuite from BigInt v1.60 - 4054 tests
- * fixed PREREQUISITES to BigInt v1.60
-
-2002-12-12 v1.08 Tels 4069 tests (never released)
- * added implementation of bmodpow() using GMPs mpow_gmp()
- * release signed by key http://bloodgate.com/tels.asc id 93B84C15
-
-2002-12-15 v1.10a Tels Never released
- * no longer needs Math::GMP (and Carp), but uses own XS layer
- * is thus faster (saves one perl subroutine layer) and less memory hungry
-   (it now uses even less memory than using Calc!)
-   new XS lets us cut out a subroutine layer
- * new XS will enable us to implement *all* missing functions like _root(),
-   _as_hex(), _as_bin() and _rsft(), _lsft()
- * fixed PREREQ to BigInt v1.65
- * extended tests in bigintg.t to cover more functions
-
-2002-12-24 v1.10 Tels 4109 tests
- * Merry Christmas and a Happy New Year to all!
- * cut out more dead wood from GMP.xs, GMP.so file shrunk a bit
- * added some comments in GMP.xs
- * fixed PREREQ to BigInt v1.64 since v1.65 is not yet out *sigh*
- * more functions like _is_odd()/_is_even()/_acmp() directly in XS - cut away
-   perl layer subroutines for more speed (about 10-30% more ops/s for small
-   argument or constant cases or other cases where the overhead is greater
-   than the actual math operation itself)
- * __stringify() no longer malloc()s a temp. storage => faster
- * added _root(), _lsft() and_rsft() functions for great speedups
- * Running the benchmark script above (adopted a bit) on the same 1 Ghz AMD
-   under BigInt v1.64:
-   Benchmark: running div_l, mod_l, mod_s for at least 3 CPU seconds...
-     div_l:  3s ( 3.20 usr +  0.00 sys =  3.20 CPU) @ 4655.00/s (n=14896)
-     mod_l:  4s ( 3.31 usr +  0.00 sys =  3.31 CPU) @ 6851.96/s (n=22680)
-     mod_s:  3s ( 3.01 usr +  0.00 sys =  3.01 CPU) @ 7088.37/s (n=21336)
- * Full (memory and other) benchmarks at http://bloodgate.com/perl/bigint/
-
-2003-01-01 v1.11 Tels 4109 tests
- * rewrote stringify_bin() and stringify_hex() to not allocate scratch buffers
-   Faster, no longer needs malloc()/free() and strlen().
-   Thanx to Sysiphus for pointing this out.
- * removed _as_hex() and _as_bin() from GMP.pm and moved the logic to GMP.xs
- * documented in todo to replace all malloc()/free() with New and Safefree()
- * removed unused cmp_two() function in GMP.xs
- * removed the unused "$zero = ..."/"$one = ..." in GMP.pm
-
-2003-01-08 v1.12a Tels 4109 tests (not released)
- * removed unused function _mmod from XS code
- * removed unnecc. if len == 0 check in _as_bin(), _as_hex() etc
- * replace some RETVAL = malloc() lines with defined to make changing them
-   later much easier
-
-2003-07-04 v1.12b Tels 4491 tests (not released)
- * testsuite from v1.65
- * fixed prereq to require BigInt v1.65
-
-2003-12-11 v1.12 Tels 4677 tests
- * testsuite from v1.67, especialy revamped bigintg.t
- * fixed prereq to require BigInt v1.67
- * added _log_int() to XS code
- * some routines did only return the result, but not modify $x in place
-
-2004-01-10 v1.13 Tels 4759 tests
- * tests from BigInt v1.68
- * removed DESTROY from GMP.pm and made GMP.xs destroy => DESTROY
- * removed _num from GMP.pm and made GMP.xs __stringify => _num
- * removed _modinv() from GMP.pm and fixed up _modinv in GMP.xs
- * disabled the borken _log_int() from the XS code
- * modify $x in place for _dec, _inc, _add, _mod, _mul, _fac, _and, _or,
-   _xor, _sqrt, _root and _sub (sub in non-reversed form), this removes some
-   malloc/free and makes these ops slightly faster
-   (between 10 and 33% in Math::BigInt (!), depending on input and size)
-
-2004-02-15 v1.14 Tels 4867 tests
- * require BigInt v1.70, use tests from it and make API compatible with it
- * _rsft() and _lsft() modify their argument instead of making a copy,
-   meaning brsft() and blsft() got about 20% faster in BigInt
- * added a working _zeros() method
- * added a working _log_int() method
-
-2004-11-22 v1.15 Tels 5112 tests
- * some small cleanups in the Perl code
- * changed "class" to "Class" to avoid the reserved keyword for MS compiler
- * do not pull unused parameter "Class" from stack - avoid compiler warnings
- * put _sub() into XS for more speed and smaller memory footprint
- * testsuite from MBI v1.73
-
-2004-12-09 v1.16 Tels 5112 tests
- * fixed a leak in _div() (Thanx Tassilo v. Parsival!)
- * put _div() into XS, making division slightly faster for small numbers
- * put leak.pl and leaktest into MANIFEST for later checking
-
-2005-01-01 v1.17 Tels 5182 tests
- * use XSLoader instead of DynaLoader to save a tiny amount of memory
- * take over tests from Math::BigInt v1.74
- * require Math::BigInt v1.74
- * simplify sub code in XS (left-over artifact from v1.16)
- * fix a leak in _zeros()
- * _zeros() is now much faster for odd numbers (O(1) vs. O(N*N))
-
-2005-04-11 v1.18 Tels 5186 tests
- * _log_int() handles now plain scalars as $base parameter
- * take over tests from MBI 1.76, require it
+2001-07-22 v1.00 Tels
+ * First version (basically working with some quirks)
 
 Please send me test-reports, your experiences with this and your ideas - I love
 to hear about my work!

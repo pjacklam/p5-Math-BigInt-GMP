@@ -5,7 +5,7 @@ package Devel::CheckLib;
 use 5.00405; #postfix foreach
 use strict;
 use vars qw($VERSION @ISA @EXPORT);
-$VERSION = '1.01';
+$VERSION = '1.03';
 use Config qw(%Config);
 use Text::ParseWords 'quotewords';
 
@@ -109,7 +109,7 @@ representing additional paths to search for libraries.
 
 =item LIBS
 
-a C<ExtUtils::MakeMaker>-style space-seperated list of
+a C<ExtUtils::MakeMaker>-style space-separated list of
 libraries (each preceded by '-l') and directories (preceded by '-L').
 
 This can also be supplied on the command-line.
@@ -137,7 +137,7 @@ representing additional paths to search for headers.
 
 =item INC
 
-a C<ExtUtils::MakeMaker>-style space-seperated list of
+a C<ExtUtils::MakeMaker>-style space-separated list of
 incpaths, each preceded by '-I'.
 
 This can also be supplied on the command-line.
@@ -365,7 +365,7 @@ sub _findcc {
     # Need to use $keep=1 to work with MSWin32 backslashes and quotes
     my $Config_ccflags =  $Config{ccflags};  # use copy so ASPerl will compile
     my @Config_ldflags = ();
-    for my $config_val ( @Config{qw(ldflags perllibs)} ){
+    for my $config_val ( @Config{qw(ldflags)} ){
         push @Config_ldflags, $config_val if ( $config_val =~ /\S/ );
     }
     my @ccflags = grep { length } quotewords('\s+', 1, $Config_ccflags||'');
@@ -374,7 +374,11 @@ sub _findcc {
     my @cc = split(/\s+/, $Config{cc});
     return ( [ @cc, @ccflags ], \@ldflags ) if -x $cc[0];
     foreach my $path (@paths) {
-        my $compiler = File::Spec->catfile($path, $cc[0]) . $Config{_exe};
+        my $compiler = File::Spec->catfile($path, $cc[0]) . ($^O eq 'cygwin' ? '' : $Config{_exe});
+        return ([ $compiler, @cc[1 .. $#cc], @ccflags ], \@ldflags)
+            if -x $compiler;
+        next if ! length $Config{_exe};
+        $compiler = File::Spec->catfile($path, $cc[0]);
         return ([ $compiler, @cc[1 .. $#cc], @ccflags ], \@ldflags)
             if -x $compiler;
     }
@@ -417,7 +421,7 @@ sub _quiet_system {
 You must have a C compiler installed.  We check for C<$Config{cc}>,
 both literally as it is in Config.pm and also in the $PATH.
 
-It has been tested with varying degrees on rigourousness on:
+It has been tested with varying degrees of rigorousness on:
 
 =over
 
