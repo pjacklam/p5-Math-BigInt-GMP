@@ -15,7 +15,6 @@ while (<DATA>) {
     s/\s+$//;                   # remove trailing whitespace
     next unless length;         # skip empty lines
 
-
     if (s/^&//) {
         $f = $_;
         next;
@@ -260,42 +259,6 @@ $CLASS->accuracy(undef);	# reset
 $CLASS->precision(undef);	# reset
 
 ###############################################################################
-# bug in bsstr()/numify() showed up in after-rounding in bdiv()
-
-$x = $CLASS->new("0.008");
-$y = $CLASS->new(2);
-$x->bdiv(3, $y);
-is($x, "0.0027",
-   qq|\$x = $CLASS->new("0.008"); \$y = $CLASS->new(2); \$x->bdiv(3, \$y);|);
-
-###############################################################################
-# Verify that numify() returns a normalized value, and underflows and
-# overflows when given "extreme" values.
-
-like($CLASS->new("12345e67")->numify(), qr/^1\.2345e\+?0*71$/,
-     qq|$CLASS->new("12345e67")->numify()|);
-
-# underflow
-like($CLASS->new("1e-9999")->numify(), qr/^\+?0$/,
-     qq|$CLASS->new("1e-9999")->numify()|);
-
-# overflow
-unlike($CLASS->new("1e9999")->numify(), qr/^1(\.0*)?e\+?9+$/,
-       qq|$CLASS->new("1e9999")->numify()|);
-
-###############################################################################
-# Check numify on non-finite objects.
-
-{
-    require Math::Complex;
-    my $inf = Math::Complex::Inf();
-    my $nan = $inf - $inf;
-    is($CLASS -> binf("+") -> numify(),  $inf, "numify of +Inf");
-    is($CLASS -> binf("-") -> numify(), -$inf, "numify of -Inf");
-    is($CLASS -> bnan()    -> numify(),  $nan, "numify of NaN");
-}
-
-###############################################################################
 # bsqrt() with set global A/P or A/P enabled on $x, also a test whether bsqrt()
 # correctly modifies $x
 
@@ -497,9 +460,9 @@ is($x, 2,
 $x = $CLASS->new("2");
 $y = $CLASS->new("18.2");
 
-# 2 * (2 ** 18.2);
+# 2 * (2 ** int(18.2));
 $x <<= $y;
-is($x->copy()->bfround(-9), "602248.763144685",
+is($x->copy()->bfround(-9), "524288.000000000",
    qq|\$x = $CLASS->new("2"); \$y = $CLASS->new("18.2");| .
    q| $x <<= $y; $x->copy()->bfround(-9);|);
 
@@ -703,10 +666,10 @@ $div_scale = 40
 &brsft
 NaNbrsft:2:NaN
 0:2:0
-1:1:0.5
+1:1:0
 2:1:1
 4:1:2
-123:1:61.5
+123:1:61
 32:3:4
 
 &blsft

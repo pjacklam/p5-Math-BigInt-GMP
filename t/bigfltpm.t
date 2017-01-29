@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2409            # tests in require'd file
+use Test::More tests => 2402            # tests in require'd file
                         + 5;            # tests in this file
 
 use Math::BigInt lib => 'GMP';
