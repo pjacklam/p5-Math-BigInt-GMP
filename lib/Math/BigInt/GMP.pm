@@ -9,7 +9,7 @@ use 5.006002;
 
 use vars qw/$VERSION/;
 
-$VERSION = '1.37';
+$VERSION = '1.38';
 
 use XSLoader;
 XSLoader::load "Math::BigInt::GMP", $VERSION;
@@ -219,6 +219,65 @@ to access the GMP c-library. This cut's out another (perl sub routine) layer
 and also reduces the memory footprint by not loading Math::GMP and Carp at
 all.
 
+=head1 BUGS
+
+Please report any bugs or feature requests to
+C<bug-math-bigint-gmp at rt.cpan.org>, or through the web interface at
+L<https://rt.cpan.org/Ticket/Create.html?Queue=Math-BigInt-GMP>
+(requires login).
+We will be notified, and then you'll automatically be notified of progress on
+your bug as I make changes.
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Math::BigInt::GMP
+
+You can also look for information at:
+
+=over 4
+
+=item * RT: CPAN's request tracker
+
+L<https://rt.cpan.org/Public/Dist/Display.html?Name=Math-BigInt-GMP>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/Math-BigInt-GMP>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/dist/Math-BigInt-GMP>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/Math-BigInt-GMP/>
+
+=item * CPAN Testers Matrix
+
+L<http://matrix.cpantesters.org/?dist=Math-BigInt-GMP>
+
+=item * The Bignum mailing list
+
+=over 4
+
+=item * Post to mailing list
+
+C<bignum at lists.scsys.co.uk>
+
+=item * View mailing list
+
+L<http://lists.scsys.co.uk/pipermail/bignum/>
+
+=item * Subscribe/Unsubscribe
+
+L<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/bignum>
+
+=back
+
+=back
+
 =head1 LICENSE
 
 This program is free software; you may redistribute it and/or modify it under
@@ -232,7 +291,9 @@ Thanx to Chip Turner for providing Math::GMP, which was inspiring my work.
 
 =head1 SEE ALSO
 
-L<Math::BigInt>, L<Math::BigInt::Calc>, L<Math::BigInt::FastCalc>,
-L<Math::BigInt::Pari>.
+L<Math::BigInt>, L<Math::BigFloat>, and the other backends
+L<Math::BigInt::Calc>, L<Math::BigInt::GMP>, and L<Math::BigInt::Pari>.
+
+The other GMP modules L<Math::GMP>, L<Math::GMPf>, L<Math::GMPq>, L<Math::GMPz>
 
 =cut

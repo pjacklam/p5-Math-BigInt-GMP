@@ -24,4 +24,4 @@ my $trustme = {
     coverage_class => 'Pod::Coverage::CountParents',
   };
 
-all_pod_coverage_ok($trustme, "All our Math::BigInt::GMP are covered");
+all_pod_coverage_ok($trustme, "Math::BigInt::GMP is covered");

@@ -9,5 +9,6 @@ BEGIN {
     use_ok('Math::BigInt');         # Math::BigInt is required for the tests
 };
 
-diag("Testing Math::BigInt::GMP $Math::BigInt::GMP::VERSION, Perl $], $^X");
-diag("  with Math::BigInt $Math::BigInt::VERSION");
+diag("Testing Math::BigInt::GMP $Math::BigInt::GMP::VERSION");
+diag("==> Perl $], $^X");
+diag("==> Math::BigInt $Math::BigInt::VERSION");
