@@ -1,3 +1,5 @@
+The following list is not up to date:
+
 * _lsft() and _rsft() could probably be a bit more optimized
 * move _log_int() to XS
 * _digit() should be in XS

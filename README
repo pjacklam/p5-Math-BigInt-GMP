@@ -29,6 +29,15 @@ If the signature is good, do:
     make test
     make install
 
+If you have trouble compiling this package because the GMP library is
+installed in a non-standard location, try to pass the INC and LIBS
+arguments to Makefile.PL with the appropriate information. Here
+is an example:
+
+        perl Makefile.PL\
+         INC="-I/apps/perl588/site/gmp-4.2.1/include"\
+         LIBS="-L/apps/perl588/site/gmp-4.2.1/lib -lgmp"
+
 To use this module, replace:
 
     use Math::BigInt;
