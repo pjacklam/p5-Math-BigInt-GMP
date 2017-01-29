@@ -1,5 +1,8 @@
 Revision history for Perl extension Math::BigInt::GMP.
 
+2015-12-31 v1.48 pjacklam
+  * Sync test files with Math-BigInt-1.999713.
+
 2015-12-14 v1.47 pjacklam
   * Add patch from Gregor Herrmann (GREGOA) based on code by Dana Jacobsen
     (DANAJ) to fix problems with the new() method when Perl is compiled with
