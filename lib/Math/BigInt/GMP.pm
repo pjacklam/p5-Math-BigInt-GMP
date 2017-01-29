@@ -7,7 +7,7 @@ use 5.006002;
 use strict;
 use warnings;
 
-our $VERSION = '1.46';
+our $VERSION = '1.47';
 
 use XSLoader;
 XSLoader::load "Math::BigInt::GMP", $VERSION;

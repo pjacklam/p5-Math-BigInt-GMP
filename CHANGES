@@ -1,5 +1,11 @@
 Revision history for Perl extension Math::BigInt::GMP.
 
+2015-12-14 v1.47 pjacklam
+  * Add patch from Gregor Herrmann (GREGOA) based on code by Dana Jacobsen
+    (DANAJ) to fix problems with the new() method when Perl is compiled with
+    support for 64-bit integers, but on platforms when the underlying OS is
+    32-bit (CPAN RT #71548).
+
 2015-12-03 v1.46 pjacklam
   * Add patch from Dana Jacobsen (DANAJ) and add new test file
     't/mbi-from-big-scalar.t' regarding CPAN RT #103517.
