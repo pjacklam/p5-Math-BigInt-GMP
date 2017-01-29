@@ -75,6 +75,9 @@ while (<DATA>)
   # some unary ops
    } elsif ($f =~ /^b(nan|floor|ceil|int|sstr|neg|abs|sgn|inc|dec|not|sqrt|fac)$/) {
     $try .= "\$x->$f();";
+  # overloaded functions
+   } elsif ($f =~ /^(log|exp|sin|cos|atan2|int|neg|abs|sqrt)$/) {
+    $try .= "\$x = $f(\$x);";
    } elsif ($f =~ /^(numify|length|stringify|as_hex|as_bin)$/) {
     $try .= "\$x->$f();";
    } elsif ($f eq "exponent"){
@@ -753,11 +756,11 @@ NaNlog:2:NaN
 122:NaNlog:NaN
 NaNlog1:NaNlog:NaN
 122:inf:NaN
-inf:122:NaN
+inf:122:inf
 122:-inf:NaN
 -inf:122:NaN
 -inf:-inf:NaN
-inf:inf:NaN
+inf:inf:inf
 0:4:NaN
 -21:4:NaN
 21:-21:NaN
@@ -768,6 +771,7 @@ inf:inf:NaN
 82:3:4
 # 3.9... truncate
 80:3:3
+4096:2:12
 15625:5:6
 15626:5:6
 15624:5:5
@@ -785,7 +789,6 @@ inf:inf:NaN
 144115188075855872:2:57
 288230376151711744:2:58
 576460752303423488:2:59
-4096:2:12
 1329227995784915872903807060280344576:2:120
 # $x == $base => result 1
 3:3:1
@@ -2709,3 +2712,23 @@ NaNas_hex:NaN
 +inf:inf
 -inf:-inf
 NaNas_bin:NaN
+# overloaded functions
+&log
+-1:NaN
+0:NaN
+1:0
+2:0
+3:1
+123456789:18
+1234567890987654321:41
+-inf:NaN
+inf:inf
+NaN:NaN
+&exp
+&sin
+&cos
+&atan2
+&int
+&neg
+&abs
+&sqrt
