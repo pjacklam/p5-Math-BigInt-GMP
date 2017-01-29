@@ -14,7 +14,7 @@ require Scalar::Util;   # otherwise the first sub would do this
 my $xg = Math::BigInt::GMP->_new("44");
 my $yg = Math::BigInt::GMP->_new("21");
 
-for my $do ( 
+for my $do (
   [ sub { $xg = Math::BigInt::GMP->_div($xg,$yg); 1; }, 'divide direct' ],
   [ sub { my $z = $x / $y; 1; }, 'divide' ],
   [ sub { my $z = $x - $y; 1; }, 'subtract' ],
@@ -39,4 +39,3 @@ for my $do (
   }
 
 exit;
-

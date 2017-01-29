@@ -27,11 +27,11 @@ WriteMakefile
    'INSTALLDIRS'       => 'site',
    'ABSTRACT_FROM'     => 'lib/Math/BigInt/GMP.pm',
    'PREREQ_PM'         => {
-                           Math::BigInt => 1.999719,
+                           Math::BigInt => 1.999800,
                            XSLoader => 0.02,
                           },
    TEST_REQUIRES       => {
-                           Test::More => 0.47,
+                           Test::More => 0.94,
                           },
    'LIBS'              => ['-lgmp'],
    'SIGN'              => 1,

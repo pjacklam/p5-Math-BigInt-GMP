@@ -4,9 +4,9 @@ use strict;
 use warnings;
 
 use Test::More tests => 2402            # tests in require'd file
-                        + 5;            # tests in this file
+                         + 5;           # tests in this file
 
-use Math::BigInt lib => 'GMP';
+use Math::BigInt only => 'GMP';
 use Math::BigFloat;
 
 our $CLASS = "Math::BigFloat";

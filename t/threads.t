@@ -15,7 +15,7 @@ BEGIN {
 
 use threads;
 
-use Math::BigInt lib => 'GMP';
+use Math::BigInt only => 'GMP';
 
 my @threads = map {
     my $x = $_;

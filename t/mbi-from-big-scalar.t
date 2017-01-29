@@ -7,7 +7,7 @@ use warnings;
 
 use Test::More;
 
-use Math::BigInt lib => "GMP";
+use Math::BigInt only => 'GMP';
 
 # Don't run these tests unless we have proper 64-bit support.
 

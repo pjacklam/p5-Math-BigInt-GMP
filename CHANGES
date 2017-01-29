@@ -1,5 +1,23 @@
 Revision history for Perl extension Math::BigInt::GMP.
 
+2016-11-15 v1.600 pjacklam
+  * Sync test files with Math-BigInt-1.999800.
+
+  * Update bundled Devel::CheckLib from v1.03 to v1.07.
+
+  * Math::BigInt::GMP is now a subclass of Math::BigInt::Lib, so remove pure
+    Perl methods from Math::BigInt::GMP that are implemented in the superclass
+    Math::BigInt::Lib. The methods removed are _digit(), _num(), _nok(), and
+    _log_int(). The version of _log_int() implemented in Math::BigInt::GMP was
+    buggy anyway.
+
+  * Fix _check() so it doesn't give a "use of uninitialized value" warning if
+    given an undefined "object".
+
+  * Trim whitespace in all files.
+
+  * Better use of the functionality in Test::More in t/bigintg.t.
+
 2016-04-25 v1.51 pjacklam
   * Sync test files with Math-BigInt-1.999719.
 
