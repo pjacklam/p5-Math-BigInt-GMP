@@ -30,5 +30,5 @@ my @ret = map {
 
 pass 'we survived our threads';
 
-is @ret, 20, 'got all the numbers we expected';
+is(@ret, 20, 'got all the numbers we expected');
 is($ret[$_], $_, 'numbers look sane') for 0 .. 19;

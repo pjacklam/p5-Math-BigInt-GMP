@@ -1,5 +1,12 @@
 Revision history for Perl extension Math::BigInt::GMP.
 
+2015-12-03 v1.46 pjacklam
+  * Add patch from Dana Jacobsen (DANAJ) and add new test file
+    't/mbi-from-big-scalar.t' regarding CPAN RT #103517.
+  * Fix spelling in GMP.xs ('modifing' -> 'modifying').
+  * Whitespace/formatting in t/bigintg.t to make it more readble (for me, at
+    least) and more in accordance with the 'perlstyle' manpage.
+
 2015-11-09 v1.45 pjacklam
   * Sync test files with Math-BigInt-1.999709.
   * Required version of Test::More is 0.47.

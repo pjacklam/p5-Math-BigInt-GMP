@@ -7,7 +7,7 @@ use 5.006002;
 use strict;
 use warnings;
 
-our $VERSION = '1.45';
+our $VERSION = '1.46';
 
 use XSLoader;
 XSLoader::load "Math::BigInt::GMP", $VERSION;
@@ -67,7 +67,7 @@ sub _nok {
         return $n;
     }
 
-    # Make a copy of the original n, since we'll be modifing n in-place.
+    # Make a copy of the original n, since we'll be modifying n in-place.
 
     my $n_orig = _copy($c, $n);
 

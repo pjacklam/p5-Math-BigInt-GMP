@@ -167,9 +167,9 @@ _new(Class,x)
   CODE:
     NEW_GMP_MPZ_T;
     /* using the IV directly is a bit faster */
-    if (SvUOK(x))
+    if (SvUOK(x) || SvIOK(x))
       {
-      mpz_init_set_si(*RETVAL, (UV)SvUV(x));
+      mpz_init_set_ui(*RETVAL, (UV)SvUV(x));
       }
     else
       {
@@ -189,8 +189,8 @@ _new_attach(Class,sv,x)
     mpz_t *mpz;
   CODE:
     mpz = malloc (sizeof(mpz_t));
-    if (SvUOK(x)) {
-      mpz_init_set_si(*mpz, (UV)SvUV(x));
+    if (SvUOK(x) || SvIOK(x)) {
+      mpz_init_set_ui(*mpz, (UV)SvUV(x));
     }
     else {
       mpz_init_set_str(*mpz, SvPV_nolen(x), 10);
