@@ -3043,6 +3043,18 @@ NaNas_hex:NaN
 -inf:-inf
 NaNas_bin:NaN
 
+&as_oct
+128:0200
+-128:-0200
+0:00
+-0:00
+1:01
+0b1010111101010101010110110110110110101:01275252666665
+0x123456789123456789:044321263611044321263611
++inf:inf
+-inf:-inf
+NaNas_oct:NaN
+
 # overloaded functions
 &log
 -1:NaN
