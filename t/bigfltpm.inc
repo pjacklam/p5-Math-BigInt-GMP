@@ -70,9 +70,9 @@ while (<DATA>) {
     } elsif ($f eq "bpi") {
         $try .= qq| $CLASS->bpi(\$x);|;
     } elsif ($f eq "binc") {
-        $try .= ' ++$x;';
+        $try .= ' $x->binc();';
     } elsif ($f eq "bdec") {
-        $try .= ' --$x;';
+        $try .= ' $x->bdec();';
     } elsif ($f eq "bround") {
         $try .= qq| $setup; \$x->bround($args[1]);|;
     } elsif ($f eq "bfround") {
@@ -111,7 +111,7 @@ while (<DATA>) {
         } elsif ($f eq "bacmp") {
             $try .= ' $x->bacmp($y);';
         } elsif ($f eq "bpow") {
-            $try .= ' $x ** $y;';
+            $try .= ' $x->bpow($y);';
         } elsif ($f eq "bnok") {
             $try .= ' $x->bnok($y);';
         } elsif ($f eq "bcos") {
@@ -123,21 +123,21 @@ while (<DATA>) {
         } elsif ($f eq "broot") {
             $try .= qq| $setup; \$x->broot(\$y);|;
         } elsif ($f eq "badd") {
-            $try .= ' $x + $y;';
+            $try .= ' $x->badd($y);';
         } elsif ($f eq "bsub") {
-            $try .= ' $x - $y;';
+            $try .= ' $x->bsub($y);';
         } elsif ($f eq "bmul") {
-            $try .= ' $x * $y;';
+            $try .= ' $x->bmul($y);';
         } elsif ($f eq "bdiv") {
-            $try .= qq| $setup; \$x / \$y;|;
+            $try .= qq| $setup; scalar \$x->bdiv(\$y);|;
         } elsif ($f eq "bdiv-list") {
             $try .= qq| $setup; join(",", \$x->bdiv(\$y));|;
         } elsif ($f eq "brsft") {
-            $try .= ' $x >> $y;';
+            $try .= ' $x->brsft($y);';
         } elsif ($f eq "blsft") {
-            $try .= ' $x << $y;';
+            $try .= ' $x->blsft($y);';
         } elsif ($f eq "bmod") {
-            $try .= ' $x % $y;';
+            $try .= ' $x->bmod($y);';
         } else {
             # Functions with three arguments
             $try .= qq| \$z = $CLASS->new("$args[2]");|;
@@ -462,7 +462,7 @@ $y = $CLASS->new("18.2");
 
 # 2 * (2 ** int(18.2));
 $x <<= $y;
-is($x->copy()->bfround(-9), "524288.000000000",
+is($x->copy()->bfround(-9), "602248.763144685",
    qq|\$x = $CLASS->new("2"); \$y = $CLASS->new("18.2");| .
    q| $x <<= $y; $x->copy()->bfround(-9);|);
 
@@ -666,10 +666,10 @@ $div_scale = 40
 &brsft
 NaNbrsft:2:NaN
 0:2:0
-1:1:0
+1:1:0.5
 2:1:1
 4:1:2
-123:1:61
+123:1:61.5
 32:3:4
 
 &blsft
