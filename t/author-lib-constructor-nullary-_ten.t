@@ -58,6 +58,8 @@ my $out0 = '10';
 
     my $test = qq|\@got = $LIB->_ten(); |;
 
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
+
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
@@ -84,6 +86,8 @@ my $out0 = '10';
     my $got;
 
     my $test = qq|\$got = $LIB->_ten(); |;
+
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");

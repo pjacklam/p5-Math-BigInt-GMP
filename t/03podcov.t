@@ -21,9 +21,18 @@ plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage"
   if $@;
 
 my $trustme = {
+               # By default, the "private" key includes qr/^_/,
+               private => [ qr/^__/,
+                            qr/^(un)?import$/,
+                            qr/^DESTROY$/,
+                            qr/^bootstrap$/,
+                          ],
                trustme => [ 'api_version',
                             'STORABLE_freeze',
-                            'STORABLE_thaw' ],
+                            'STORABLE_thaw',
+                            '_new_attach',
+                            '_set',
+                          ],
                coverage_class => 'Pod::Coverage::CountParents',
               };
 

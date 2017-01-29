@@ -11,7 +11,7 @@ BEGIN {
 use strict;
 use warnings;
 
-use Test::More tests => 81205;
+use Test::More tests => 82645;
 
 ###############################################################################
 # Read and load configuration file and backend library.
@@ -79,6 +79,8 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
              . qq|\$y = $LIB->_new("$in1"); |
              . qq|\@got = $LIB->_nok(\$x, \$y);|;
 
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
+
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
@@ -111,7 +113,7 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
            "'$test' second input arg is still a $REF");
 
         is($LIB->_str($y), $in1,
-           "'$test' second output arg is unmodified");
+           "'$test' second input arg is unmodified");
     };
 }
 
@@ -125,6 +127,8 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
     my $test = qq|\$x = $LIB->_new("$in0"); |
              . qq|\$y = $LIB->_new("$in1"); |
              . qq|\$got = $LIB->_nok(\$x, \$y);|;
+
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
@@ -155,6 +159,6 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
            "'$test' second input arg is still a $REF");
 
         is($LIB->_str($y), $in1,
-           "'$test' second output arg is unmodified");
+           "'$test' second input arg is unmodified");
     };
 }

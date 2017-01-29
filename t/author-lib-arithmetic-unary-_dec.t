@@ -11,7 +11,7 @@ BEGIN {
 use strict;
 use warnings;
 
-use Test::More tests => 2601;
+use Test::More tests => 5469;
 
 ###############################################################################
 # Read and load configuration file and backend library.
@@ -53,7 +53,7 @@ my @data;
 
 # Small numbers.
 
-for (my $x = 1; $x <= 500 ; ++ $x) {
+for (my $x = 1; $x <= 512 ; ++ $x) {
     push @data, [ $x, $x - 1 ];
 }
 
@@ -81,6 +81,17 @@ for (my $p = 1; $p <= 50 ; ++ $p) {
     push @data, [ $x, $y ];
 }
 
+# Add data in data file.
+
+(my $datafile = $0) =~ s/\.t/.dat/;
+open DATAFILE, $datafile or die "$datafile: can't open file for reading: $!";
+while (<DATAFILE>) {
+    s/\s+\z//;
+    next if /^#/ || ! /\S/;
+    push @data, [ split /:/ ];
+}
+close DATAFILE or die "$datafile: can't close file after reading: $!";
+
 # List context.
 
 for (my $i = 0 ; $i <= $#data ; ++ $i) {
@@ -90,6 +101,8 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
 
     my $test = qq|\$x = $LIB->_new("$in0"); |
              . qq|\@got = $LIB->_dec(\$x);|;
+
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
@@ -126,6 +139,8 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
 
     my $test = qq|\$x = $LIB->_new("$in0"); |
              . qq|\$got = $LIB->_dec(\$x);|;
+
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");

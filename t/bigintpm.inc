@@ -82,7 +82,9 @@ while (<DATA>) {
     # overloaded functions
     } elsif ($f =~ /^(log|exp|sin|cos|atan2|int|neg|abs|sqrt)$/) {
         $try .= " \$x = $f(\$x);";
-    } elsif ($f =~ /^(numify|length|stringify|as_hex|as_bin|as_oct)$/) {
+    } elsif ($f =~ /^(numify|length|stringify)$/) {
+        $try .= " \$x->$f();";
+    } elsif ($f =~ /^(to|as)_(hex|oct|bin)$/) {
         $try .= " \$x->$f();";
     } elsif ($f eq "exponent") {
         # ->bstr() to see if an object is returned

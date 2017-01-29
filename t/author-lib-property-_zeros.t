@@ -11,7 +11,7 @@ BEGIN {
 use strict;
 use warnings;
 
-use Test::More tests => 20605;
+use Test::More tests => 20993;
 
 ###############################################################################
 # Read and load configuration file and backend library.
@@ -43,12 +43,23 @@ can_ok($LIB, '_zeros');
 use lib 't';
 use Math::BigInt::Lib::TestUtil qw< randstr >;
 
-# Generate test data.
-
 my @data;
+
+# Small numbers.
+
+for (my $x = 0; $x <= 9 ; ++ $x) {
+    push @data, [ $x, 0 ];
+}
+
+for (my $x = 10; $x <= 99 ; ++ $x) {
+    push @data, [ $x, $x % 10 ? 0 : 1 ];
+}
+
+# Random numbers.
 
 for (my $p = 0 ; $p <= 100 ; ++ $p) {
     for (my $q = 0 ; $q <= 50 ; ++ $q) {
+        next if $p + $q < 2;                # small numbers done above
         my $in0  = randstr($p, 10)          # p digit number (base 10)
                  . (1 + int rand 9)         # ensure non-zero digit
                  . ("0" x $q);              # q zeros
@@ -66,6 +77,8 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
 
     my $test = qq|\$x = $LIB->_new("$in0"); | .
                qq|\@got = $LIB->_zeros(\$x);|;
+
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
@@ -93,6 +106,8 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
 
     my $test = qq|\$x = $LIB->_new("$in0"); | .
                qq|\$got = $LIB->_zeros(\$x);|;
+
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");

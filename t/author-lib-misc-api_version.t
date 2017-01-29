@@ -47,6 +47,8 @@ can_ok($LIB, 'api_version');
 
     my $test = qq|\@got = $LIB->api_version();|;
 
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
+
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
@@ -70,6 +72,8 @@ can_ok($LIB, 'api_version');
     my $got;
 
     my $test = qq|\$got = $LIB->api_version();|;
+
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");

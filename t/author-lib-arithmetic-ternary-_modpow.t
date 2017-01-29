@@ -80,6 +80,8 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
              . qq|\$m = $LIB->_new("$in2"); |
              . qq|\@got = $LIB->_modpow(\$x, \$y, \$m);|;
 
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
+
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
@@ -137,6 +139,8 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
              . qq|\$y = $LIB->_new("$in1"); |
              . qq|\$m = $LIB->_new("$in2"); |
              . qq|\$got = $LIB->_modpow(\$x, \$y, \$m);|;
+
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");

@@ -11,7 +11,7 @@ BEGIN {
 use strict;
 use warnings;
 
-use Test::More tests => 3605;
+use Test::More tests => 7209;
 
 ###############################################################################
 # Read and load configuration file and backend library.
@@ -76,7 +76,7 @@ while (<DATAFILE>) {
 }
 close DATAFILE or die "$datafile: can't close file after reading: $!";
 
-# List context.
+# List context without swap flag.
 
 for (my $i = 0 ; $i <= $#data ; ++ $i) {
     my ($in0, $in1, $out0) = @{ $data[$i] };
@@ -86,6 +86,8 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
     my $test = qq|\$x = $LIB->_new("$in0"); |
              . qq|\$y = $LIB->_new("$in1"); |
              . qq|\@got = $LIB->_sub(\$x, \$y);|;
+
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
@@ -119,11 +121,11 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
            "'$test' second input arg is still a $REF");
 
         is($LIB->_str($y), $in1,
-           "'$test' second output arg is unmodified");
+           "'$test' second input arg is unmodified");
     };
 }
 
-# Scalar context.
+# Scalar context without swap flag.
 
 for (my $i = 0 ; $i <= $#data ; ++ $i) {
     my ($in0, $in1, $out0) = @{ $data[$i] };
@@ -133,6 +135,8 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
     my $test = qq|\$x = $LIB->_new("$in0"); |
              . qq|\$y = $LIB->_new("$in1"); |
              . qq|\$got = $LIB->_sub(\$x, \$y);|;
+
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
@@ -163,6 +167,97 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
            "'$test' second input arg is still a $REF");
 
         is($LIB->_str($y), $in1,
-           "'$test' second output arg is unmodified");
+           "'$test' second input arg is unmodified");
+    };
+}
+
+# List context with swap flag.
+
+for (my $i = 0 ; $i <= $#data ; ++ $i) {
+    my ($in0, $in1, $out0) = @{ $data[$i] };
+
+    my ($x, $y, @got);
+
+    my $test = qq|\$x = $LIB->_new("$in0"); |
+             . qq|\$y = $LIB->_new("$in1"); |
+             . qq|\@got = $LIB->_sub(\$x, \$y, 1);|;
+
+    eval $test;
+    is($@, "", "'$test' gives emtpy \$\@");
+
+    subtest "_sub() in list context: $test", sub {
+        plan tests => $scalar_util_ok ? 9 : 8;
+
+        cmp_ok(scalar @got, '==', 1,
+               "'$test' gives one output arg");
+
+        is(ref($got[0]), $REF,
+           "'$test' output arg is a $REF");
+
+        is($LIB->_check($got[0]), 0,
+           "'$test' output is valid");
+
+        is($LIB->_str($got[0]), $out0,
+           "'$test' output arg has the right value");
+
+        isnt(refaddr($got[0]), refaddr($x),
+             "'$test' output arg is not the first input arg")
+          if $scalar_util_ok;
+
+        is(ref($x), $REF,
+           "'$test' first input arg is still a $REF");
+
+        is($LIB->_str($x), $in0,
+           "'$test' first input arg is unmodified");
+
+        is(ref($y), $REF,
+           "'$test' second input arg is still a $REF");
+
+        ok($LIB->_str($y) eq $out0 || $LIB->_str($y) eq $in1,
+           "'$test' second input arg has the correct value");
+    };
+}
+
+# Scalar context with swap flag.
+
+for (my $i = 0 ; $i <= $#data ; ++ $i) {
+    my ($in0, $in1, $out0) = @{ $data[$i] };
+
+    my ($x, $y, $got);
+
+    my $test = qq|\$x = $LIB->_new("$in0"); |
+             . qq|\$y = $LIB->_new("$in1"); |
+             . qq|\$got = $LIB->_sub(\$x, \$y, 1);|;
+
+    eval $test;
+    is($@, "", "'$test' gives emtpy \$\@");
+
+    subtest "_sub() in scalar context: $test", sub {
+        plan tests => $scalar_util_ok ? 8 : 7;
+
+        is(ref($got), $REF,
+           "'$test' output arg is a $REF");
+
+        is($LIB->_check($got), 0,
+           "'$test' output is valid");
+
+        is($LIB->_str($got), $out0,
+           "'$test' output arg has the right value");
+
+        isnt(refaddr($got), refaddr($x),
+             "'$test' output arg is not the first input arg")
+          if $scalar_util_ok;
+
+        is(ref($x), $REF,
+           "'$test' first input arg is still a $REF");
+
+        is($LIB->_str($x), $in0,
+           "'$test' first input arg is unmodified");
+
+        is(ref($y), $REF,
+           "'$test' second input arg is still a $REF");
+
+        ok($LIB->_str($y) eq $out0 || $LIB->_str($y) eq $in1,
+           "'$test' second input arg has the correct value");
     };
 }

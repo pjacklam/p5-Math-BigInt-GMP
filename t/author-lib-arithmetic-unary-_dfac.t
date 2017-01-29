@@ -11,7 +11,7 @@ BEGIN {
 use strict;
 use warnings;
 
-use Test::More tests => 2985;
+use Test::More tests => 605;
 
 ###############################################################################
 # Read and load configuration file and backend library.
@@ -47,15 +47,9 @@ die $@ if $@;
 
 ###############################################################################
 
-can_ok($LIB, '_from_oct');
+can_ok($LIB, '_dfac');
 
 my @data;
-
-# Small numbers.
-
-for (my $x = 0; $x <= 255 ; ++ $x) {
-    push @data, [ sprintf("0%o", $x), $x ];
-}
 
 # Add data in data file.
 
@@ -75,17 +69,18 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
 
     my ($x, @got);
 
-    my $test = qq|\@got = $LIB->_from_oct("$in0");|;
+    my $test = qq|\$x = $LIB->_new("$in0"); |
+             . qq|\@got = $LIB->_dfac(\$x);|;
 
     diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
-    subtest "_from_oct() in list context: $test", sub {
-        plan tests => 4,
+    subtest "_dfac() in list context: $test", sub {
+        plan tests => 6,
 
-        cmp_ok(scalar @got, '==', 1,
+        cmp_ok(scalar @got, "==", 1,
                "'$test' gives one output arg");
 
         is(ref($got[0]), $REF,
@@ -96,6 +91,12 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
 
         is($LIB->_str($got[0]), $out0,
            "'$test' output arg has the right value");
+
+        is(ref($x), $REF,
+           "'$test' input arg is still a $REF");
+
+        ok($LIB->_str($x) eq $out0 || $LIB->_str($x) eq $in0,
+           "'$test' input arg has the correct value");
     };
 }
 
@@ -106,15 +107,16 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
 
     my ($x, $got);
 
-    my $test = qq|\$got = $LIB->_from_oct("$in0");|;
+    my $test = qq|\$x = $LIB->_new("$in0"); |
+             . qq|\$got = $LIB->_dfac(\$x);|;
 
     diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
-    subtest "_from_oct() in scalar context: $test", sub {
-        plan tests => 3,
+    subtest "_dfac() in scalar context: $test", sub {
+        plan tests => 5,
 
         is(ref($got), $REF,
            "'$test' output arg is a $REF");
@@ -124,5 +126,11 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
 
         is($LIB->_str($got), $out0,
            "'$test' output arg has the right value");
+
+        is(ref($x), $REF,
+           "'$test' input arg is still a $REF");
+
+        ok($LIB->_str($x) eq $out0 || $LIB->_str($x) eq $in0,
+           "'$test' input arg has the correct value");
     };
 }

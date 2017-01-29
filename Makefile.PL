@@ -27,7 +27,7 @@ WriteMakefile
                             #'ExtUtils::MakeMaker' => 6.58,
                             'XSLoader'            => 0.02,
                             'Test::More'          => 0.82,
-                            'Math::BigInt'        => 1.999801,
+                            'Math::BigInt'        => 1.999808,
                            },
    'LICENSE'            => 'perl_5',
    'LIBS'               => ['-lgmp'],   # e.g., '-lm'

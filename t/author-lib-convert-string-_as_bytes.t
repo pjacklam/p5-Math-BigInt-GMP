@@ -11,7 +11,7 @@ BEGIN {
 use strict;
 use warnings;
 
-use Test::More tests => 2985;
+use Test::More tests => 4001;
 
 ###############################################################################
 # Read and load configuration file and backend library.
@@ -31,15 +31,6 @@ die "No library defined in file '$config_file'"
 die "Invalid library name '$LIB' in file '$config_file'"
   unless $LIB =~ /^[A-Za-z]\w*(::\w+)*\z/;
 
-# Read the reference type(s) the library uses.
-
-our $REF = $config->{_}->{ref};
-
-die "No reference type defined in file '$config_file'"
-  unless defined $REF;
-die "Invalid reference type '$REF' in file '$config_file'"
-  unless $REF =~ /^[A-Za-z]\w*(::\w+)*\z/;
-
 # Load the library.
 
 eval "require $LIB";
@@ -47,15 +38,9 @@ die $@ if $@;
 
 ###############################################################################
 
-can_ok($LIB, '_from_oct');
+can_ok($LIB, '_as_bytes');
 
 my @data;
-
-# Small numbers.
-
-for (my $x = 0; $x <= 255 ; ++ $x) {
-    push @data, [ sprintf("0%o", $x), $x ];
-}
 
 # Add data in data file.
 
@@ -72,29 +57,28 @@ close DATAFILE or die "$datafile: can't close file after reading: $!";
 
 for (my $i = 0 ; $i <= $#data ; ++ $i) {
     my ($in0, $out0) = @{ $data[$i] };
+    $out0 = eval qq|"$out0"|;
 
     my ($x, @got);
 
-    my $test = qq|\@got = $LIB->_from_oct("$in0");|;
+    my $test = qq|\$x = $LIB->_new("$in0"); |
+             . qq|\@got = $LIB->_as_bytes(\$x)|;
 
     diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
-    subtest "_from_oct() in list context: $test", sub {
-        plan tests => 4,
+    subtest "_as_bytes() in list context: $test", sub {
+        plan tests => 3,
 
         cmp_ok(scalar @got, '==', 1,
                "'$test' gives one output arg");
 
-        is(ref($got[0]), $REF,
-           "'$test' output arg is a $REF");
+        is(ref($got[0]), "",
+           "'$test' output arg is a scalar");
 
-        is($LIB->_check($got[0]), 0,
-           "'$test' output is valid");
-
-        is($LIB->_str($got[0]), $out0,
+        is($got[0], $out0,
            "'$test' output arg has the right value");
     };
 }
@@ -103,26 +87,25 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
 
 for (my $i = 0 ; $i <= $#data ; ++ $i) {
     my ($in0, $out0) = @{ $data[$i] };
+    $out0 = eval qq|"$out0"|;
 
     my ($x, $got);
 
-    my $test = qq|\$got = $LIB->_from_oct("$in0");|;
+    my $test = qq|\$x = $LIB->_new("$in0"); |
+             . qq|\$got = $LIB->_as_bytes(\$x)|;
 
     diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
-    subtest "_from_oct() in scalar context: $test", sub {
-        plan tests => 3,
+    subtest "_as_bytes() in scalar context: $test", sub {
+        plan tests => 2,
 
-        is(ref($got), $REF,
-           "'$test' output arg is a $REF");
+        is(ref($got), "",
+           "'$test' output arg is a scalar");
 
-        is($LIB->_check($got), 0,
-           "'$test' output is valid");
-
-        is($LIB->_str($got), $out0,
+        is($got, $out0,
            "'$test' output arg has the right value");
     };
 }

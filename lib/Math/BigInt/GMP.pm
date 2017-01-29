@@ -1,17 +1,14 @@
-###############################################################################
-# Math library for Math::BigInt, representing big numbers by the GMP library.
-
 package Math::BigInt::GMP;
 
 use 5.006002;
 use strict;
 use warnings;
 
-use Math::BigInt::Lib '1.999801';
+use Math::BigInt::Lib 1.999801;
 
 our @ISA = qw< Math::BigInt::Lib >;
 
-our $VERSION = '1.6002';
+our $VERSION = '1.6003';
 
 use XSLoader;
 XSLoader::load "Math::BigInt::GMP", $VERSION;

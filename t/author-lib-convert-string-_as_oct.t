@@ -69,10 +69,12 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
     my $test = qq|\$x = $LIB->_new("$in0"); |
              . qq|\@got = $LIB->_as_oct(\$x)|;
 
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
+
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
-    subtest "_from_oct() in list context: $test", sub {
+    subtest "_to_oct() in list context: $test", sub {
         plan tests => 3,
 
         cmp_ok(scalar @got, '==', 1,
@@ -96,10 +98,12 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
     my $test = qq|\$x = $LIB->_new("$in0"); |
              . qq|\$got = $LIB->_as_oct(\$x)|;
 
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
+
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
-    subtest "_from_oct() in scalar context: $test", sub {
+    subtest "_to_oct() in scalar context: $test", sub {
         plan tests => 2,
 
         is(ref($got), "",

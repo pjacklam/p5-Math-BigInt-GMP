@@ -79,6 +79,8 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
              . qq|\$m = $LIB->_new("$in1"); |
              . qq|\@got = $LIB->_modinv(\$x, \$m);|;
 
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
+
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
