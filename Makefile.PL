@@ -1,3 +1,5 @@
+#!perl
+
 use ExtUtils::MakeMaker;
 use lib 'inc'; # load our bundled version of Devel::CheckLib
 use Devel::CheckLib;
@@ -19,13 +21,13 @@ check_lib_or_exit(lib => 'gmp', header => 'gmp.h', @ARGV);
 WriteMakefile
   (
    'NAME'              => 'Math::BigInt::GMP',
-   'AUTHOR'            => 'Tels',
+   'AUTHOR'            => 'Peter John Acklam <pjacklam@gmail.com>',
    'VERSION_FROM'      => 'lib/Math/BigInt/GMP.pm',
    'LICENSE'           => 'perl',
    'INSTALLDIRS'       => 'site',
    'ABSTRACT_FROM'     => 'lib/Math/BigInt/GMP.pm',
    'PREREQ_PM'         => {
-                           Math::BigInt => 1.999702,
+                           Math::BigInt => 1.999703,
                            XSLoader => 0.02,
                           },
    'LIBS'              => ['-lgmp'],
