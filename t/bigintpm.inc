@@ -73,7 +73,7 @@ while (<DATA>)
    } elsif ($f eq "bone") {
     $try .= "\$x->bone('$args[1]');";
   # some unary ops
-   } elsif ($f =~ /^b(nan|floor|ceil|sstr|neg|abs|inc|dec|not|sqrt|fac)$/) {
+   } elsif ($f =~ /^b(nan|floor|ceil|sstr|neg|abs|sgn|inc|dec|not|sqrt|fac)$/) {
     $try .= "\$x->$f();";
    } elsif ($f =~ /^(numify|length|stringify|as_hex|as_bin)$/) {
     $try .= "\$x->$f();";
@@ -522,6 +522,27 @@ is (ref($x),'Math::Foo');
 # hasn't (before 5.7.3 at least) a consistent way to say inf, and some things
 # like 1e100000 crash on some platforms. So simple test for the string 'inf'
 $x = $class->new('+inf'); is ($x,'inf');
+
+###############################################################################
+# numify() and 64 bit integer support
+
+require Config;
+SKIP: {
+    skip("no 64 bit integer support", 4)
+      unless $Config::Config{use64bitint} || $Config::Config{use64bitall};
+
+    # The following should not give "1.84467440737096e+19".
+
+    $x = $class -> new(2) -> bpow(64) -> bdec();
+    is($x -> bstr(),   "18446744073709551615", "bigint 2**64-1 as string");
+    is($x -> numify(), "18446744073709551615", "bigint 2**64-1 as number");
+
+    # The following should not give "-9.22337203685478e+18".
+
+    $x = $class -> new(2) -> bpow(63) -> bneg();
+    is($x -> bstr(),   "-9223372036854775808", "bigint -2**63 as string");
+    is($x -> numify(), "-9223372036854775808", "bigint -2**63 as number");
+};
 
 ###############################################################################
 ###############################################################################
@@ -1201,6 +1222,13 @@ babsNaN:NaN
 -1:1
 +123456789:123456789
 -123456789:123456789
+&bsgn
+NaN:NaN
++inf:1
+-inf:-1
+0:0
++123456789:1
+-123456789:-1
 &bcmp
 bcmpNaN:bcmpNaN:
 bcmpNaN:0:
