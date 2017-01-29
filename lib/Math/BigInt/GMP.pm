@@ -3,13 +3,11 @@
 
 package Math::BigInt::GMP;
 
-use strict;
 use 5.006002;
-# use warnings; # dont use warnings for older Perls
+use strict;
+use warnings;
 
-use vars qw/$VERSION/;
-
-$VERSION = '1.43';
+our $VERSION = '1.44';
 
 use XSLoader;
 XSLoader::load "Math::BigInt::GMP", $VERSION;

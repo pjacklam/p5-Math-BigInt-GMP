@@ -8,3 +8,4 @@
 ^MYMETA\.(yml|json)\z
 pm_to_blib
 \.git
+assertlib.*\.exe
