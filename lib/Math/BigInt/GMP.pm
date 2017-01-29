@@ -9,7 +9,7 @@ use 5.006002;
 
 use vars qw/$VERSION/;
 
-$VERSION = '1.38';
+$VERSION = '1.39';
 
 use XSLoader;
 XSLoader::load "Math::BigInt::GMP", $VERSION;

@@ -1,5 +1,8 @@
 Revision history for Perl extension Math::BigInt::GMP.
 
+2015-08-17 v1.39 pjacklam
+ * Updated test files with those from Math-BigInt-1.9997.
+ 
 2014-04-03 v1.38 pjacklam
  * Updated test files from the Math::BigInt distribution (Peter John Acklam).
  * Updated POD (Peter John Acklam)
