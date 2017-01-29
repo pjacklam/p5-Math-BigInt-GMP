@@ -1,5 +1,19 @@
 Revision history for Perl extension Math::BigInt::GMP.
 
+2015-09-11 v1.41 pjacklam
+ lib/Math/BigInt/GMP.pm
+  * Updated version number.
+ Makefile.PL
+  * Updated required version of Math::BigInt.
+ t/bigfltpm.inc
+  * Synced tests with the Math-BigInt distribution.
+ t/bigfltpm.t
+  * Updated number of tests.
+ t/bigintpm.inc
+  * Synced tests with the Math-BigInt distribution.
+ t/bigintpm.t
+  * Updated number of tests.
+
 2015-08-18 v1.40 pjacklam
  CHANGES
   * Add changes for the newest release.

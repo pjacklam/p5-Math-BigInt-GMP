@@ -1,6 +1,7 @@
-#!/usr/bin/perl
+#!perl
 
 use strict;             # restrict unsafe constructs
+use warnings;           # enable optional warnings
 
 use Test::More;
 
