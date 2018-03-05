@@ -8,7 +8,7 @@ use Math::BigInt::Lib 1.999801;
 
 our @ISA = qw< Math::BigInt::Lib >;
 
-our $VERSION = '1.6003';
+our $VERSION = '1.6004';
 
 use XSLoader;
 XSLoader::load "Math::BigInt::GMP", $VERSION;
@@ -49,7 +49,7 @@ __END__
 
 =head1 NAME
 
-Math::BigInt::GMP - Use the GMP library for Math::BigInt routines
+Math::BigInt::GMP - backend library for Math::BigInt etc. based on GMP
 
 =head1 SYNOPSIS
 
@@ -64,13 +64,18 @@ Math::BigInt::GMP - Use the GMP library for Math::BigInt routines
 
 =head1 DESCRIPTION
 
-Math::BigInt::Calc inherits from Math::BigInt::Lib.
+Math::BigInt::GMP is a backend library for Math::BigInt, Math::BigFloat,
+Math::BigRat and related modules.
 
-Provides support for big integer calculations by means of the GMP c-library.
+Math::BigInt::GMP provides support for big integer calculations by means of the
+GMP C library. See L<https://gmplib.org/> for more information about the GMP
+library.
 
-Math::BigInt::GMP now no longer uses Math::GMP, but provides it's own XS layer
-to access the GMP c-library. This cuts out another (Perl sub routine) layer and
-also reduces the memory footprint by not loading Math::GMP and Carp.
+Math::BigInt::GMP no longer uses Math::GMP, but provides its own XS layer to
+access the GMP C library. This cuts out another (Perl subroutine) layer and
+also reduces the memory footprint.
+
+Math::BigInt::GMP inherits from Math::BigInt::Lib.
 
 =head1 BUGS
 
@@ -93,7 +98,7 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<https://rt.cpan.org/Public/Dist/Display.html?Name=Math-BigInt-GMP>
+L<https://rt.cpan.org/Dist/Display.html?Name=Math-BigInt-GMP>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
@@ -140,7 +145,8 @@ the same terms as Perl itself.
 
 Tels E<lt>http://bloodgate.com/E<gt> in 2001-2007.
 
-Thanx to Chip Turner for providing Math::GMP, which was inspiring my work.
+Thanks to Chip Turner (CHIPT on CPAN) for providing Math::GMP, which was
+inspiring my work.
 
 =head1 SEE ALSO
 
