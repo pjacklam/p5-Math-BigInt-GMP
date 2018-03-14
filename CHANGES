@@ -1,5 +1,7 @@
 2018-xx-xx v1.6005 pjacklam
 
+ * Fix memory leak in _modinv() (thanks to DANAJ). See CPAN RT #123807.
+
  * Convert t/02pod.t -> t/release-pod.t.
 
  * Increment version number.
