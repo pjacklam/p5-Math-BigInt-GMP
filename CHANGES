@@ -1,5 +1,7 @@
 1.6005 Not Released
 
+ * Use a MANIFEST.SKIP file based on the default file from ExtUtils::Manifest.
+
  * Format CHANGES according to CPAN::Changes::Spec. Add test file
    t/release-cpan-changes.t.
 
