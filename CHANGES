@@ -1,5 +1,7 @@
 1.6005 Not Released
 
+ * Add test file t/release-test-version.t.
+
  * Add test file t/release-portability.t.
 
  * Use a MANIFEST.SKIP file based on the default file from ExtUtils::Manifest.
