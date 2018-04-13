@@ -1,4 +1,3 @@
-
 #!start included /usr/share/perl5/5.26/ExtUtils/MANIFEST.SKIP
 # Avoid version control files.
 \bRCS\b
@@ -65,7 +64,5 @@
 ^MYMETA\.
 #!end included /usr/share/perl5/5.26/ExtUtils/MANIFEST.SKIP
 
-# Avoid XS-related files.
-^[^/]*\.bs$
-^[^/]*\.c$
-^[^/]*\.o$
+# Avoid distribution-specific stuff.
+/Math-BigInt-GMP-[0-9]
