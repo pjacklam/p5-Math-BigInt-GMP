@@ -1,5 +1,3 @@
-# Perl distro generic.
-
 .*
 !.gitignore
 /MANIFEST*
@@ -14,11 +12,27 @@
 /blib/
 /inc/
 /pm_to_blib
-Makefile*
 pod2htm*
-*.bs
+/*.bs
+/*.[co]
 
-# Perl distro Specific.
+# edits and editors
+
+.#*
+[#]*#
+*~
+*.*~*
+*.bak
+*.old
+*.orig
+*.tmp
+
+# patch and diff
+
+*.patch
+*.rej
+*.diff
+
+# distribution-specific
 
 /Math-BigInt-GMP-[0-9]*
-/GMP.[co]
