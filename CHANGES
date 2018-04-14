@@ -1,5 +1,7 @@
 1.6005 Not Released
 
+ * Sync test files with Math-BigInt.
+
  * Add test file t/release-test-version.t.
 
  * Add test file t/release-portability.t.
