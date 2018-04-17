@@ -1,23 +1,21 @@
-1.6005 Not Released
-
- * Sync test files with Math-BigInt.
-
- * Add test file t/release-test-version.t.
-
- * Add test file t/release-portability.t.
-
- * Use a MANIFEST.SKIP file based on the default file from ExtUtils::Manifest.
-
- * Format CHANGES according to CPAN::Changes::Spec. Add test file
-   t/release-cpan-changes.t.
-
- * Convert t/03podcov.t -> t/release-pod-coverage.t.
+1.6005 2018-04-17
 
  * Fix memory leak in _modinv() (thanks to DANAJ). See CPAN RT #123807.
 
- * Convert t/02pod.t -> t/release-pod.t.
+ * The tests now require Test::More version 0.88 or newer.
 
- * Increment version number.
+ * Sync test files with Math-BigInt.
+
+ * Add test files t/release-test-version.t, t/release-portability.t, and
+   t/release-cpan-changes.t.
+
+ * Use a MANIFEST.SKIP file based on the default file in the ExtUtils-Manifest
+   distribution.
+
+ * Format CHANGES according to CPAN::Changes::Spec.
+
+ * Convert test file t/02pod.t to t/release-pod.t and t/03podcov.t to
+   t/release-pod-coverage.t.
 
 1.6004 2017-02-05 pjacklam
 
