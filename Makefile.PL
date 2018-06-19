@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use ExtUtils::MakeMaker;
+use Devel::CheckLib;
 
 #printf "Your OS is [%s]!\n---\n", $Config::Config{'osname'};  ### for testing purpose only
 
@@ -17,7 +18,7 @@ if (($Config::Config{'osname'} eq 'darwin')
                         $Config::Config{'lddlflags'});
 }
 
-WriteMakefile
+my %WriteMakefile =
   (
    'NAME'               => 'Math::BigInt::GMP',
    'VERSION_FROM'       => 'lib/Math/BigInt/GMP.pm',
@@ -29,9 +30,22 @@ WriteMakefile
                             'Test::More'          => 0.88,
                             'Math::BigInt'        => 1.999812,
                            },
+   'CONFIGURE_REQUIRES' => {
+                            'Devel::CheckLib' => 0,
+                           },
    'LICENSE'            => 'perl_5',
-   'LIBS'               => ['-lgmp'],   # e.g., '-lm'
-   'DEFINE'             => '',          # e.g., '-DHAVE_SOMETHING'
-   'INC'                => '',          # e.g., '-I/usr/include/other'
    'SIGN'               => 1,
   );
+
+if(check_lib(lib => 'gmp', header => 'gmp.h')) {
+  $WriteMakefile{LIBS} = ['-lgmp'];
+} else {
+  $WriteMakefile{BUILD_REQUIRES} = {
+                                    'Alien::Base::Wrapper' => 0,
+                                    'Alien::GMP'           => 1.11,
+  };
+  $WriteMakefile{CC} = '$(FULLPERL) -Iinc -MAlien::Base::Wrapper=Alien::GMP -e cc --';
+  $WriteMakefile{LD} = '$(FULLPERL) -Iinc -MAlien::Base::Wrapper=Alien::GMP -e ld --';
+}
+
+WriteMakefile(%WriteMakefile);
