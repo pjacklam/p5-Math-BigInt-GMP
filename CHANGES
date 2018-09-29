@@ -2,6 +2,8 @@
 
  * Fix memory leak in _modinv() (thanks to DANAJ). See CPAN RT #123807.
 
+ * Make tests pass when '.' is not in @INC. (CPAN RT #120718)
+
  * The tests now require Test::More version 0.88 or newer.
 
  * Sync test files with Math-BigInt.
