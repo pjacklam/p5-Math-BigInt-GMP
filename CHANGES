@@ -1,3 +1,7 @@
+1.6006
+
+ * Better Makefile.PL.
+
 1.6005 2018-04-17
 
  * Fix memory leak in _modinv() (thanks to DANAJ). See CPAN RT #123807.
