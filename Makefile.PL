@@ -26,7 +26,7 @@ WriteMakefile
    # run the distribution.
 
    'CONFIGURE_REQUIRES' => {
-                            'ExtUtils::MakeMaker' => 0,
+                            'ExtUtils::MakeMaker' => 6.58,
                            },
 
    # A hash of modules that are needed to build the module but not run it.
@@ -45,7 +45,7 @@ WriteMakefile
    # it.
 
    'TEST_REQUIRES'      => {
-                            'Test::More'          => 0.88,
+                            'Test::More'          => 0.82,
                            },
 
    'LICENSE'            => 'perl_5',
