@@ -68,7 +68,7 @@ while (<DATA>) {
     $try = qq|\$x = $CLASS->new("$args[0]");|;
     if ($f eq "bnorm") {
         $try = qq|\$x = $CLASS->bnorm("$args[0]");|;
-    } elsif ($f =~ /^is_(zero|one|odd|even|negative|positive|nan|int)$/) {
+    } elsif ($f =~ /^is_(zero|one|odd|even|(non_)?(negative|positive)|nan|int)$/) {
         $try .= " \$x->$f() || 0;";
     } elsif ($f eq "is_inf") {
         $try .= qq| \$x->is_inf("$args[1]");|;
@@ -1076,6 +1076,22 @@ invalid:0
 +inf:1
 -inf:0
 invalid:0
+
+&is_non_negative
+0:1
+-1:0
+1:1
++inf:1
+-inf:0
+NaN:0
+
+&is_non_positive
+0:1
+-1:1
+1:0
++inf:0
+-inf:1
+NaN:0
 
 &is_int
 -inf:0
@@ -2850,9 +2866,9 @@ abc:12:NaN
 -inf:NaN:NaN
 #
 -3:-inf:0
--3:-3:NaN
--3:-2:NaN
--3:-1:NaN
+-3:-3:0
+-3:-2:0
+-3:-1:0
 -3:0:1
 -3:1:-3
 -3:2:9
@@ -2861,9 +2877,9 @@ abc:12:NaN
 -3:NaN:NaN
 #
 -2:-inf:0
--2:-3:NaN
--2:-2:NaN
--2:-1:NaN
+-2:-3:0
+-2:-2:0
+-2:-1:0
 -2:0:1
 -2:1:-2
 -2:2:4
@@ -2905,9 +2921,9 @@ abc:12:NaN
 1:NaN:NaN
 #
 2:-inf:0
-2:-3:NaN
-2:-2:NaN
-2:-1:NaN
+2:-3:0
+2:-2:0
+2:-1:0
 2:0:1
 2:1:2
 2:2:4
@@ -2916,9 +2932,9 @@ abc:12:NaN
 2:NaN:NaN
 #
 3:-inf:0
-3:-3:NaN
-3:-2:NaN
-3:-1:NaN
+3:-3:0
+3:-2:0
+3:-1:0
 3:0:1
 3:1:3
 3:2:9
