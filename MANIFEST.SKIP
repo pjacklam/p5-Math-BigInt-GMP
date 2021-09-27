@@ -1,4 +1,4 @@
-#!start included /usr/local/share/perl5/site_perl/5.32/ExtUtils/MANIFEST.SKIP
+# Start included MANIFEST.SKIP template from ExtUtils::Manifest 1.73
 
 # Avoid version control files.
 \bRCS\b
@@ -76,14 +76,13 @@
 # Avoid AppVeyor file
 ^\.?appveyor.yml
 
-#!end included /usr/local/share/perl5/site_perl/5.32/ExtUtils/MANIFEST.SKIP
+# End included /usr/local/share/perl5/site_perl/5.32/ExtUtils/MANIFEST.SKIP
 
 # Avoid more git stuff.
 \B\.gitattributes\b
 
-# Avoid patch-related files.
+# Avoid patch files.
 \.patch$
-\.rej$
 \.diff$
 
 # Avoid archives.
@@ -110,5 +109,7 @@
 
 # Avoid distribution-specific stuff.
 ^Math-BigInt-GMP-[0-9]
+
+# Avoid XS related files.
 ^GMP\.[co]$
 ^GMP\.bs$
