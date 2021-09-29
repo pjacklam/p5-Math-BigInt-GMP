@@ -3,6 +3,6 @@
 use strict;
 use warnings;
 
-use Test::CPAN::Changes;
+use Test::Vars;
 
-changes_ok();
+all_vars_ok();
