@@ -77,6 +77,12 @@ also reduces the memory footprint.
 
 Math::BigInt::GMP inherits from Math::BigInt::Lib.
 
+=head1 STATIC FUNCTIONS
+
+=head2 $str = gmp_version();
+
+Returns the underlying GMP library's version as a string, e.g., C<6.2.1>.
+
 =head1 BUGS
 
 Please report any bugs or feature requests to
