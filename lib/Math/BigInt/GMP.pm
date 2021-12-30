@@ -129,7 +129,7 @@ L<https://cpanratings.perl.org/dist/Math-BigInt-GMP>
 This program is free software; you may redistribute it and/or modify it under
 the same terms as Perl itself.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Tels E<lt>http://bloodgate.com/E<gt> in 2001-2007.
 
@@ -137,6 +137,8 @@ Thanks to Chip Turner (CHIPT on CPAN) for providing Math::GMP, which was
 inspiring my work.
 
 Maintained by Peter John Acklam E<lt>pjacklam@gmail.comE<gt> 2010-2021.
+
+gmp_version() provided by FGasper on GitHub.
 
 =head1 SEE ALSO
 
