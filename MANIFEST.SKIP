@@ -86,7 +86,6 @@
 
 # Avoid patch-related files.
 \.patch$
-\.rej$
 \.diff$
 
 # Avoid archives.
