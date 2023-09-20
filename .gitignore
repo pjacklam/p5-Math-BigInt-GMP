@@ -33,6 +33,38 @@ pod2htm*
 *.rej
 *.diff
 
+# Cygwin stackdump files
+
+*.exe.stackdump
+
+# archives
+
+*.zip
+*.tar
+*.Z
+*.tz
+*.gz
+*.bz2
+*.tbz2
+*.xz
+*.txz
+*.lzma
+*.tlzma
+*.lz
+*.tlz
+*.lzo
+*.tzo
+*.lz4
+*.tlz4
+*.rz
+*.lrz
+*.lzh
+
+# development
+
+/dev/
+/devel/
+
 # distribution-specific
 
 /Math-BigInt-GMP-[0-9]*
