@@ -568,7 +568,7 @@ _as_oct(Class,n)
     SvPOK_on(RETVAL);
     buf = SvPVX(RETVAL);                /* get ptr to storage */
     *buf++ = '0';                       /* prepend '0' */
-    mpz_get_str(buf, 8, *n);            /* convert to binary string */
+    mpz_get_str(buf, 8, *n);            /* convert to octal string */
     SvCUR_set(RETVAL, len);             /* so set real length */
   OUTPUT:
     RETVAL
