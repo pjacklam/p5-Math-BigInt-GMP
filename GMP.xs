@@ -461,6 +461,28 @@ _to_hex(Class,n)
     RETVAL
 
 ##############################################################################
+# _to_bin() - return ref to binary string (unprefixed)
+
+SV *
+_to_bin(Class,n)
+        mpz_t * n
+
+  PREINIT:
+    int len;
+    char *buf;
+
+  CODE:
+    /* len is always >= 1, and accurate (unlike in decimal) */
+    len = mpz_sizeinbase(*n, 2);
+    RETVAL = newSV(len);                /* alloc len bytes */
+    SvPOK_on(RETVAL);
+    buf = SvPVX(RETVAL);                /* get ptr to storage */
+    mpz_get_str(buf, 2, *n);            /* convert to binary string */
+    SvCUR_set(RETVAL, len);             /* so set real length */
+  OUTPUT:
+    RETVAL
+
+##############################################################################
 # _as_hex() - return ref to hexadecimal string (prefixed with 0x)
 
 SV *
