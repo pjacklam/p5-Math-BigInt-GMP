@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 27369;
+use Test::More tests => 2285;
 
 ###############################################################################
 # Read and load configuration file and backend library.
@@ -39,65 +39,68 @@ die $@ if $@;
 
 ###############################################################################
 
-my $scalar_util_ok = eval { require Scalar::Util; };
-Scalar::Util -> import('refaddr') if $scalar_util_ok;
+can_ok($LIB, '_clog10');
 
-diag "Skipping some tests since Scalar::Util is not installed."
-  unless $scalar_util_ok;
+# ceil(log(x) / log(10)
 
-can_ok($LIB, '_log_int');
+sub clog10 {
+    my $x = shift;
+    my $y = int(log($x) / log(10));
+
+    my $trial = 10 ** $y;
+    return $y if $trial == $x;
+
+    while ($trial > $x) {
+        $y--;
+        $trial = 10 ** $y;
+    }
+
+    while ($trial < $x) {
+        $y++;
+        $trial = 10 ** $y;
+    }
+
+    return $y;
+}
 
 my @data;
 
 # Small numbers.
 
-for (my $x = 0; $x <= 1000 ; ++ $x) {
-    for (my $b = 0; $b <= 10 ; ++ $b) {
-
-        if ($x == 0 || $b <= 1) {
-            push @data, [ $x, $b, undef, undef ];
-            next;
-        }
-
-        my $y = int(log($x) / log($b));
-        $y++ while $b ** $y < $x;
-        $y-- while $b ** $y > $x;
-        my $status = $b ** $y == $x ? 1 : 0;
-        push @data, [ $x, $b, $y, $status ];
-    }
+for (my $x = 1; $x <= 998 ; ++ $x) {
+    my $y = clog10($x);
+    my $status = 10 ** $y == $x ? 1 : 0;
+    push @data, [ $x, $y, $status ];
 }
 
 # Larger numbers.
 
-for (my $b = 2 ; $b <= 100 ; $b++) {
-    my $bobj = $LIB -> _new($b);
-    for (my $y = 2 ; $y <= 10 ; $y++) {
-        my $x    = $LIB -> _pow($LIB -> _copy($bobj), $LIB -> _new($y));
-        my $x_up = $LIB -> _inc($LIB -> _copy($x));
-        my $x_dn = $LIB -> _dec($LIB -> _copy($x));
-        push @data, [ $LIB -> _str($x),    $b, $y,     1 ];
-        push @data, [ $LIB -> _str($x_up), $b, $y,     0 ];
-        push @data, [ $LIB -> _str($x_dn), $b, $y - 1, 0 ];
-    }
+my $b = $LIB -> _new(10);
+for (my $y = 3 ; $y <= 50 ; $y++) {
+    my $x    = $LIB -> _pow($LIB -> _copy($b), $LIB -> _new($y));
+    my $x_up = $LIB -> _inc($LIB -> _copy($x));
+    my $x_dn = $LIB -> _dec($LIB -> _copy($x));
+    push @data, [ $LIB -> _str($x_dn), $y,     0 ]; # clog10(10**$y - 1) = $y
+    push @data, [ $LIB -> _str($x),    $y,     1 ]; # clog10(10**$y)     = $y
+    push @data, [ $LIB -> _str($x_up), $y + 1, 0 ]; # clog10(10**$y + 1) = $y + 1
 }
 
 # List context.
 
 for (my $i = 0 ; $i <= $#data ; ++ $i) {
-    my ($in0, $in1, $out0, $out1) = @{ $data[$i] };
+    my ($in0, $out0, $out1) = @{ $data[$i] };
 
     my ($x, $y, @got);
 
     my $test = qq|\$x = $LIB->_new("$in0"); |
-             . qq|\$y = $LIB->_new("$in1"); |
-             . qq|\@got = $LIB->_log_int(\$x, \$y);|;
+             . qq|\@got = $LIB->_clog10(\$x);|;
 
     diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
 
     eval $test;
     is($@, "", "'$test' gives emtpy \$\@");
 
-    subtest "_log_int() in list context: $test", sub {
+    subtest "_clog10() in list context: $test", sub {
 
         unless (defined $out0) {
             plan tests => 1;
@@ -107,11 +110,11 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
             return;
         }
 
-        plan tests => 11;
+        plan tests => 8;
 
-        # Number of input arguments.
+        # Number of output arguments.
 
-        cmp_ok(scalar @got, '==', 2,
+        cmp_ok(scalar(@got), '==', 2,
                "'$test' gives two output args");
 
         # First output argument.
@@ -125,24 +128,11 @@ for (my $i = 0 ; $i <= $#data ; ++ $i) {
         is($LIB->_str($got[0]), $out0,
            "'$test' output arg has the right value");
 
-      SKIP: {
-            skip "Scalar::Util not available", 1 unless $scalar_util_ok;
-
-            isnt(refaddr($got[0]), refaddr($y),
-                 "'$test' first output arg is not the second input arg")
-        }
-
         is(ref($x), $REF,
            "'$test' first input arg is still a $REF");
 
         ok($LIB->_str($x) eq $out0 || $LIB->_str($x) eq $in0,
            "'$test' first input arg has the correct value");
-
-        is(ref($y), $REF,
-           "'$test' second input arg is still a $REF");
-
-        is($LIB->_str($y), $in1,
-           "'$test' second input arg is unmodified");
 
         # Second output argument.
 
