@@ -913,6 +913,20 @@ _pow(Class,x,y)
     PUSHs( x );
 
 ##############################################################################
+# _lcm() - lcm(m,n)
+
+mpz_t *
+_lcm(Class,x,y)
+        mpz_t*  x
+        mpz_t*  y
+
+  CODE:
+    NEW_GMP_MPZ_T_INIT;
+    mpz_lcm(*RETVAL, *x, *y);
+  OUTPUT:
+    RETVAL
+
+##############################################################################
 # _gcd() - gcd(m,n)
 
 mpz_t *
