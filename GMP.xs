@@ -941,6 +941,21 @@ _gcd(Class,x,y)
     RETVAL
 
 ##############################################################################
+# _nok() - n over k (binomial coefficient)
+
+void
+_nok(Class,x,y)
+        SV*     x
+        SV*     y
+  PREINIT:
+        mpz_t* TEMP;
+        mpz_t* TEMP_1;
+  PPCODE:
+    GMP_GET_ARGS_0_1;   /* (TEMP, TEMP_1) = (x,y)  */
+    mpz_bin_ui(*TEMP, *TEMP, mpz_get_ui(*TEMP_1));
+    PUSHs( x );
+
+##############################################################################
 # _and() - m &= n
 
 void
