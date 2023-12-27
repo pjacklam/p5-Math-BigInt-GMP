@@ -956,6 +956,19 @@ _nok(Class,x,y)
     PUSHs( x );
 
 ##############################################################################
+# _fib() - Fibonacci number
+
+void
+_fib(Class,x)
+        SV*     x
+  PREINIT:
+        mpz_t* TEMP;
+  PPCODE:
+    GMP_GET_ARG_0;   /* TEMP = x */
+    mpz_fib_ui(*TEMP, mpz_get_ui(*TEMP));
+    PUSHs( x );
+
+##############################################################################
 # _and() - m &= n
 
 void
