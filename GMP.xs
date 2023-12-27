@@ -1003,6 +1003,20 @@ _fac(Class,x)
 
 
 ##############################################################################
+# _dfac() - n!! (double factorial)
+
+void
+_dfac(Class,x)
+        SV*     x
+  PREINIT:
+        mpz_t* TEMP;
+  PPCODE:
+    GMP_GET_ARG_0;   /* TEMP = x */
+    mpz_2fac_ui(*TEMP, mpz_get_ui(*TEMP));
+    PUSHs( x );
+
+
+##############################################################################
 # _copy()
 
 mpz_t *
