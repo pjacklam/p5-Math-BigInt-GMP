@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2591;
+use Test::More tests => 5181;
 
 ###############################################################################
 # Read and load configuration file and backend library.
@@ -83,6 +83,50 @@ for (my $y = 10 ; $y <= 100 ; $y++) {
     push @data, [ $LIB -> _str($x_dn), $y - 1, 0 ]; # ilog2(2**$y - 1) = $y - 1
     push @data, [ $LIB -> _str($x),    $y,     1 ]; # ilog2(2**$y)     = $y
     push @data, [ $LIB -> _str($x_up), $y,     0 ]; # ilog2(2**$y + 1) = $y
+}
+
+# Scalar context.
+
+for (my $i = 0 ; $i <= $#data ; ++ $i) {
+    my ($in0, $out0) = @{ $data[$i] };
+
+    my ($x, $y, $got);
+
+    my $test = qq|\$x = $LIB->_new("$in0"); |
+             . qq|\$got = $LIB->_ilog2(\$x);|;
+
+    diag("\n$test\n\n") if $ENV{AUTHOR_DEBUGGING};
+
+    eval $test;
+    is($@, "", "'$test' gives emtpy \$\@");
+
+    subtest "_ilog2() in list context: $test", sub {
+
+        unless (defined $out0) {
+            plan tests => 1;
+
+            is($got, $out0,
+               "'$test' output arg has the right value");
+            return;
+        }
+
+        plan tests => 5;
+
+        is(ref($got), $REF,
+           "'$test' output arg is a $REF");
+
+        is($LIB->_check($got), 0,
+           "'$test' output is valid");
+
+        is($LIB->_str($got), $out0,
+           "'$test' output arg has the right value");
+
+        is(ref($x), $REF,
+           "'$test' input arg is still a $REF");
+
+        ok($LIB->_str($x) eq $out0 || $LIB->_str($x) eq $in0,
+           "'$test' input arg has the correct value");
+    };
 }
 
 # List context.
