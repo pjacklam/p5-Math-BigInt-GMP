@@ -1,3 +1,7 @@
+1.7001 2024-01-06
+
+ * Sync test files with Math-BigInt.
+
 1.7000 2023-12-29
 
  * Add new methods _to_hex(), _to_bin(), _to_oct(), _lcm(), _dfac(), _nok(),
